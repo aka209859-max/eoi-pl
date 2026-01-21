@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+.wrangler/
+migrations_backup/
+
+# Logs
+*.log
+logs/
+.pm2/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+secrets/
+*.pem
+*.key
+
+# Build outputs
+dist/
+build/
+*.tar.gz
+
+# Test outputs
+.pytest_cache/
+.coverage
+htmlcov/
