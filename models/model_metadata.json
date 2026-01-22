@@ -1,0 +1,27 @@
+{
+  "model_type": "LightGBM + Isotonic Regression",
+  "target": "place (1-3rd)",
+  "features": [
+    "kyori",
+    "tosu",
+    "wakuban",
+    "umaban",
+    "bataiju",
+    "kyori_short",
+    "kyori_long",
+    "baba_good",
+    "tosu_many",
+    "horse_win_rate",
+    "jockey_win_rate",
+    "trainer_win_rate",
+    "wakuban_win_rate",
+    "umaban_win_rate"
+  ],
+  "train_samples": 138373,
+  "test_samples": 137657,
+  "train_auc": 0.8485374414613926,
+  "test_auc": 0.7938197092113599,
+  "train_logloss": 0.4099766547781912,
+  "test_logloss": 0.4711299534937109,
+  "created_at": "2026-01-22T00:13:09.410632"
+}
