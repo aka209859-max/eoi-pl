@@ -1,0 +1,99 @@
+{
+  "calibration": {
+    "method": "isotonic_regression",
+    "samples": 1000,
+    "ece_before": 0.06485538323810537,
+    "mce_before": 0.8074078049518979,
+    "ece_after": 1.454392162258955e-17,
+    "mce_after": 2.7755575615628914e-17,
+    "improvement_ece": 0.06485538323810536,
+    "improvement_mce": 0.8074078049518979
+  },
+  "selection": {
+    "rcc_points": [
+      {
+        "threshold": 0.0,
+        "coverage": 1.0,
+        "risk": 0.779
+      },
+      {
+        "threshold": 0.05,
+        "coverage": 0.989,
+        "risk": 0.7765419615773509
+      },
+      {
+        "threshold": 0.1,
+        "coverage": 0.868,
+        "risk": 0.7534562211981567
+      },
+      {
+        "threshold": 0.15000000000000002,
+        "coverage": 0.681,
+        "risk": 0.7180616740088106
+      },
+      {
+        "threshold": 0.2,
+        "coverage": 0.628,
+        "risk": 0.7101910828025477
+      },
+      {
+        "threshold": 0.25,
+        "coverage": 0.35,
+        "risk": 0.6428571428571428
+      },
+      {
+        "threshold": 0.30000000000000004,
+        "coverage": 0.17,
+        "risk": 0.5411764705882354
+      },
+      {
+        "threshold": 0.35000000000000003,
+        "coverage": 0.17,
+        "risk": 0.5411764705882354
+      },
+      {
+        "threshold": 0.4,
+        "coverage": 0.17,
+        "risk": 0.5411764705882354
+      },
+      {
+        "threshold": 0.45,
+        "coverage": 0.088,
+        "risk": 0.5
+      }
+    ],
+    "auc_rcc": -0.6452427206807272,
+    "num_points": 13
+  },
+  "ties": {
+    "total_entries": 100,
+    "unique_ranks": 9,
+    "tie_count": 9,
+    "tie_rate": 1.0,
+    "max_tie_size": 19
+  },
+  "dnf_exclusions": {
+    "total_exclusions": 3,
+    "exclusion_by_reason": {
+      "missing_rank": 2,
+      "status_keyword:\u4e2d\u6b62": 1
+    },
+    "sample_exclusions": [
+      {
+        "race_id": "2024_0101_45_01",
+        "umaban": 3,
+        "reason": "missing_rank"
+      },
+      {
+        "race_id": "2024_0101_45_02",
+        "umaban": 7,
+        "reason": "missing_rank"
+      },
+      {
+        "race_id": "2024_0101_45_03",
+        "umaban": 12,
+        "reason": "status_keyword:\u4e2d\u6b62"
+      }
+    ]
+  }
+}
