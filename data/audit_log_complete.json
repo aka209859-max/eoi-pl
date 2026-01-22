@@ -1,0 +1,201 @@
+{
+  "audit_meta": {
+    "generated_at": "2026-01-22T13:17:33.721092+09:00",
+    "model_version": "v1.0-PL-PowerEP",
+    "target_date": "2025_0101",
+    "data_hash": "sha256:b6be034b5b46fe64",
+    "model_hash": "sha256:5dd4e11b1535dd4d",
+    "code_hash": "git:448655b"
+  },
+  "data_quality": {
+    "total_races": 13777,
+    "total_entries": 141299,
+    "join_success_rate": 1.0,
+    "missing_rates": {
+      "kakutei_chakujun": 0.020707860635956376
+    },
+    "forbidden_columns_detected": false,
+    "forbidden_check": {
+      "odds_columns": [],
+      "popularity_columns": [],
+      "status": "PASS"
+    }
+  },
+  "exclusion_audit": {
+    "dnf_missing_rank_count": 2926,
+    "status_exclusion_count": 0,
+    "exclusion_rate": 0.020707860635956376,
+    "reasons": {
+      "missing_rank": 2926
+    },
+    "sample_race_ids": []
+  },
+  "model_training": {
+    "algorithm": "Plackett-Luce + Power EP",
+    "learning_method": "ListMLE",
+    "alpha": 0.5,
+    "max_iter": 50,
+    "tol": 0.001,
+    "training_period": "2024",
+    "training_races": 990,
+    "training_entries": 10034,
+    "num_horses": 6179,
+    "db_unique_horses": 6232,
+    "match": false,
+    "converged": false,
+    "iterations": 50,
+    "final_loss": 12582.382535291401,
+    "convergence_status": "WARN - max iterations reached but output generated"
+  },
+  "calibration_audit": {
+    "method": "isotonic_regression",
+    "split": {
+      "train": 3000,
+      "calib": 1000,
+      "test": 1000
+    },
+    "before": {
+      "ece": 0.06670394905254975,
+      "mce": 0.48645311617033443,
+      "bins": [
+        {
+          "bin": "[0.0, 0.1)",
+          "count": 119,
+          "accuracy": 0.025210084033613446,
+          "confidence": 0.06477730053500454,
+          "error": 0.03956721650139109
+        },
+        {
+          "bin": "[0.1, 0.2)",
+          "count": 206,
+          "accuracy": 0.11165048543689321,
+          "confidence": 0.15174700900734853,
+          "error": 0.04009652357045532
+        },
+        {
+          "bin": "[0.2, 0.3)",
+          "count": 231,
+          "accuracy": 0.18181818181818182,
+          "confidence": 0.24862299644168614,
+          "error": 0.06680481462350432
+        },
+        {
+          "bin": "[0.3, 0.4)",
+          "count": 200,
+          "accuracy": 0.29,
+          "confidence": 0.3461393034077215,
+          "error": 0.0561393034077215
+        },
+        {
+          "bin": "[0.4, 0.5)",
+          "count": 135,
+          "accuracy": 0.3333333333333333,
+          "confidence": 0.44383272230855875,
+          "error": 0.11049938897522543
+        },
+        {
+          "bin": "[0.5, 0.6)",
+          "count": 67,
+          "accuracy": 0.47761194029850745,
+          "confidence": 0.5404425059152235,
+          "error": 0.06283056561671602
+        },
+        {
+          "bin": "[0.6, 0.7)",
+          "count": 34,
+          "accuracy": 0.47058823529411764,
+          "confidence": 0.642095216644132,
+          "error": 0.1715069813500144
+        },
+        {
+          "bin": "[0.7, 0.8)",
+          "count": 5,
+          "accuracy": 0.6,
+          "confidence": 0.7316262902819455,
+          "error": 0.1316262902819455
+        },
+        {
+          "bin": "[0.8, 0.9)",
+          "count": 3,
+          "accuracy": 0.3333333333333333,
+          "confidence": 0.8197864495036677,
+          "error": 0.48645311617033443
+        }
+      ]
+    },
+    "after": {
+      "ece": 0.02190419052341312,
+      "mce": 0.6611766976479099,
+      "bins": [
+        {
+          "bin": "[0.0, 0.1)",
+          "count": 211,
+          "accuracy": 0.052132701421800945,
+          "confidence": 0.06807266218760019,
+          "error": 0.015939960765799246
+        },
+        {
+          "bin": "[0.1, 0.2)",
+          "count": 317,
+          "accuracy": 0.1608832807570978,
+          "confidence": 0.1747432823370525,
+          "error": 0.013860001579954706
+        },
+        {
+          "bin": "[0.2, 0.3)",
+          "count": 249,
+          "accuracy": 0.28112449799196787,
+          "confidence": 0.2631816509220519,
+          "error": 0.017942847069915946
+        },
+        {
+          "bin": "[0.3, 0.4)",
+          "count": 199,
+          "accuracy": 0.4020100502512563,
+          "confidence": 0.37804878048780477,
+          "error": 0.02396126976345153
+        },
+        {
+          "bin": "[0.6, 0.7)",
+          "count": 1,
+          "accuracy": 0.0,
+          "confidence": 0.6611766976479099,
+          "error": 0.6611766976479099
+        },
+        {
+          "bin": "[0.7, 0.8)",
+          "count": 20,
+          "accuracy": 0.5,
+          "confidence": 0.7125,
+          "error": 0.21250000000000002
+        }
+      ]
+    },
+    "improvement_ece": 0.04479975852913663,
+    "improvement_mce": -0.17472358147757544,
+    "leak_warning": null
+  },
+  "tie_audit": {
+    "definition": "Proportion of entries with tied ranks (per-race basis)",
+    "total_races": 4889,
+    "total_entries": 50000,
+    "tied_entries": 108,
+    "tie_rate": 0.00216,
+    "note": "Calculated per race to avoid cross-race false positives"
+  },
+  "prediction_audit": {
+    "total_races": 10,
+    "total_horses": 135,
+    "top5_generated": 50,
+    "sanrenpuku_max": 9,
+    "sanrentan_max": 12,
+    "constraint_violations": 0
+  },
+  "compliance": {
+    "odds_used": false,
+    "freeze": true,
+    "generation_count": 1,
+    "forbidden_check": "PASS",
+    "betting_constraints": "PASS"
+  }
+}
