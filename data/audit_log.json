@@ -1,6 +1,6 @@
 {
   "audit_meta": {
-    "generated_at": "2026-01-22T13:24:03.390425+09:00",
+    "generated_at": "2026-01-22T13:33:54.938890+09:00",
     "model_version": "v1.0-PL-PowerEP",
     "target_date": "2025_0101",
     "data_hash": "996e5c32de29ddb4",
@@ -43,74 +43,103 @@
   },
   "calibration_audit": {
     "method": "isotonic_regression",
+    "split_method": "race_id単位分割（同一レースのエントリーは同じsplitに配置）",
     "split": {
-      "train": 6000,
-      "calib": 2000,
-      "test": 2000
+      "train_races": 592,
+      "calib_races": 197,
+      "test_races": 199,
+      "train_samples": 5918,
+      "calib_samples": 2023,
+      "test_samples": 2059
     },
-    "ece_before": 0.13417371833003378,
+    "data_leak_check": {
+      "train_calib_overlap": 0,
+      "train_test_overlap": 0,
+      "calib_test_overlap": 0,
+      "leak_detected": false
+    },
+    "ece_before": 0.13847915317311335,
     "mce_before": 0.8359192541149242,
-    "ece_after": 0.009920537038505721,
-    "mce_after": 0.02601110594316164,
-    "improvement_ece": 0.12425318129152806,
-    "improvement_mce": 0.8099081481717625,
-    "leak_warning": "WARN: ECE/MCE after=0.0の可能性、データリーク疑い。train/calib/test分割を確認。"
+    "ece_after": 0.007273102023648755,
+    "mce_after": 0.025511451782955274,
+    "improvement_ece": 0.1312060511494646,
+    "improvement_mce": 0.810407802331969,
+    "leak_causes": [
+      "ECE after < 0.01（過適合の可能性）"
+    ],
+    "leak_warning": "ECE after < 0.01（過適合の可能性）"
   },
   "selection_audit": {
     "method": "risk_coverage_curve",
-    "rcc_points": [
+    "definition": {
+      "risk": "1 - accuracy (誤り率)",
+      "coverage": "採用率（閾値以上の予測割合）",
+      "auc_calculation": "∫ risk d(coverage) 台形則 (coverage 0→1)",
+      "interpretation": "AUC-RCC が小さいほど良い（低リスク高カバレッジ）"
+    },
+    "rcc_curve_sample": [
       {
-        "threshold": 0.0,
-        "coverage": 1.0,
-        "accuracy": 0.51
+        "threshold": 0.8,
+        "coverage": 0.001,
+        "risk": 0.0,
+        "accuracy": 1.0
       },
       {
-        "threshold": 0.05,
-        "coverage": 0.972,
-        "accuracy": 0.5092592592592593
+        "threshold": 0.75,
+        "coverage": 0.001,
+        "risk": 0.0,
+        "accuracy": 1.0
       },
       {
-        "threshold": 0.1,
-        "coverage": 0.895,
-        "accuracy": 0.5217877094972067
+        "threshold": 0.7,
+        "coverage": 0.007,
+        "risk": 0.2857142857142857,
+        "accuracy": 0.7142857142857143
       },
       {
-        "threshold": 0.15000000000000002,
-        "coverage": 0.791,
-        "accuracy": 0.5145385587863464
+        "threshold": 0.6499999999999999,
+        "coverage": 0.015,
+        "risk": 0.33333333333333337,
+        "accuracy": 0.6666666666666666
       },
       {
-        "threshold": 0.2,
-        "coverage": 0.669,
-        "accuracy": 0.5171898355754858
+        "threshold": 0.6,
+        "coverage": 0.035,
+        "risk": 0.48571428571428577,
+        "accuracy": 0.5142857142857142
       },
       {
-        "threshold": 0.25,
-        "coverage": 0.54,
-        "accuracy": 0.5222222222222223
+        "threshold": 0.55,
+        "coverage": 0.065,
+        "risk": 0.5384615384615384,
+        "accuracy": 0.46153846153846156
       },
       {
-        "threshold": 0.30000000000000004,
-        "coverage": 0.435,
-        "accuracy": 0.5402298850574713
+        "threshold": 0.5,
+        "coverage": 0.111,
+        "risk": 0.46846846846846846,
+        "accuracy": 0.5315315315315315
       },
       {
-        "threshold": 0.35000000000000003,
-        "coverage": 0.325,
-        "accuracy": 0.563076923076923
+        "threshold": 0.44999999999999996,
+        "coverage": 0.177,
+        "risk": 0.4689265536723164,
+        "accuracy": 0.5310734463276836
       },
       {
-        "threshold": 0.4,
+        "threshold": 0.3999999999999999,
         "coverage": 0.246,
+        "risk": 0.44308943089430897,
         "accuracy": 0.556910569105691
       },
       {
-        "threshold": 0.45,
-        "coverage": 0.177,
-        "accuracy": 0.5310734463276836
+        "threshold": 0.35,
+        "coverage": 0.325,
+        "risk": 0.43692307692307697,
+        "accuracy": 0.563076923076923
       }
     ],
-    "auc_rcc": -0.5310871054382795,
+    "auc_rcc": 0.4679128945617204,
     "num_points": 17
   },
   "tie_audit": {
