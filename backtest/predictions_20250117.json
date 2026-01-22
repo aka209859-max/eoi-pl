@@ -1,0 +1,977 @@
+{
+  "meta": {
+    "generated_at": "2026-01-22T14:03:22.308006+09:00",
+    "model_version": "v1.0-PL-PowerEP",
+    "target_date": "20250117",
+    "freeze": true,
+    "odds_used": false,
+    "model_family": "pl_powerep",
+    "alpha": 0.5,
+    "training_unique_horses": 15182,
+    "data_hash": "da52a8c9daf3d0a0",
+    "code_hash": "git:c800885",
+    "model_hash": "5e11900da96ed70b"
+  },
+  "races": [
+    {
+      "race_id": "2025_0117_44_01",
+      "horses": [
+        {
+          "umaban": 8,
+          "bamei": "リコーテリア　　　　　　　　　　　　",
+          "P_win": 0.312516,
+          "P_place": 0.937547,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 4,
+          "bamei": "ルナリオ　　　　　　　　　　　　　　",
+          "P_win": 0.156258,
+          "P_place": 0.468773,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 6,
+          "bamei": "グローリアスキング　　　　　　　　　",
+          "P_win": 0.095113,
+          "P_place": 0.28534,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 1,
+          "bamei": "メフィスト　　　　　　　　　　　　　",
+          "P_win": 0.082241,
+          "P_place": 0.246723,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 9,
+          "bamei": "オンリーユーズド　　　　　　　　　　",
+          "P_win": 0.078129,
+          "P_place": 0.234387,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_01",
+      "horses": [
+        {
+          "umaban": 1,
+          "bamei": "エスパノーラ　　　　　　　　　　　　",
+          "P_win": 0.135591,
+          "P_place": 0.406774,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 3,
+          "bamei": "グレイトフルトップ　　　　　　　　　",
+          "P_win": 0.135591,
+          "P_place": 0.406774,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 4,
+          "bamei": "スパイスマン　　　　　　　　　　　　",
+          "P_win": 0.135591,
+          "P_place": 0.406774,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 5,
+          "bamei": "クリノスペリオル　　　　　　　　　　",
+          "P_win": 0.135591,
+          "P_place": 0.406774,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 7,
+          "bamei": "キタノエーシン　　　　　　　　　　　",
+          "P_win": 0.135591,
+          "P_place": 0.406774,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_02",
+      "horses": [
+        {
+          "umaban": 5,
+          "bamei": "ラリタス　　　　　　　　　　　　　　",
+          "P_win": 0.134073,
+          "P_place": 0.40222,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 4,
+          "bamei": "ユーヴイカット　　　　　　　　　　　",
+          "P_win": 0.089382,
+          "P_place": 0.268147,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 9,
+          "bamei": "ラディアンテ　　　　　　　　　　　　",
+          "P_win": 0.07374,
+          "P_place": 0.221221,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 12,
+          "bamei": "シュルーズベリー　　　　　　　　　　",
+          "P_win": 0.073131,
+          "P_place": 0.219393,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 13,
+          "bamei": "タイセイアキュート　　　　　　　　　",
+          "P_win": 0.073131,
+          "P_place": 0.219393,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_02",
+      "horses": [
+        {
+          "umaban": 8,
+          "bamei": "センノアバドン　　　　　　　　　　　",
+          "P_win": 0.285398,
+          "P_place": 0.856193,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 9,
+          "bamei": "ビップマリン　　　　　　　　　　　　",
+          "P_win": 0.285398,
+          "P_place": 0.856193,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 7,
+          "bamei": "ネテモネテモネムイ　　　　　　　　　",
+          "P_win": 0.067152,
+          "P_place": 0.201457,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 4,
+          "bamei": "アサアール　　　　　　　　　　　　　",
+          "P_win": 0.051891,
+          "P_place": 0.155672,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 10,
+          "bamei": "ティーズクレア　　　　　　　　　　　",
+          "P_win": 0.049831,
+          "P_place": 0.149494,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_03",
+      "horses": [
+        {
+          "umaban": 11,
+          "bamei": "カガヤキテンマ　　　　　　　　　　　",
+          "P_win": 0.207546,
+          "P_place": 0.622639,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 5,
+          "bamei": "ミクニマイティー　　　　　　　　　　",
+          "P_win": 0.15566,
+          "P_place": 0.46698,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 1,
+          "bamei": "コスタデラルス　　　　　　　　　　　",
+          "P_win": 0.088948,
+          "P_place": 0.266845,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 4,
+          "bamei": "ケンオーシャン　　　　　　　　　　　",
+          "P_win": 0.083817,
+          "P_place": 0.251451,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 7,
+          "bamei": "リュウノマジシャン　　　　　　　　　",
+          "P_win": 0.080054,
+          "P_place": 0.240161,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_03",
+      "horses": [
+        {
+          "umaban": 5,
+          "bamei": "ウォーターアレ　　　　　　　　　　　",
+          "P_win": 0.166033,
+          "P_place": 0.4981,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 1,
+          "bamei": "ゼファーバローズ　　　　　　　　　　",
+          "P_win": 0.154965,
+          "P_place": 0.464894,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 6,
+          "bamei": "アイファーグラッド　　　　　　　　　",
+          "P_win": 0.125051,
+          "P_place": 0.375152,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 10,
+          "bamei": "フークベルエ　　　　　　　　　　　　",
+          "P_win": 0.102813,
+          "P_place": 0.308439,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 9,
+          "bamei": "サンチャップリン　　　　　　　　　　",
+          "P_win": 0.083017,
+          "P_place": 0.24905,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_04",
+      "horses": [
+        {
+          "umaban": 10,
+          "bamei": "キタサンユージャ　　　　　　　　　　",
+          "P_win": 0.192533,
+          "P_place": 0.577599,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 6,
+          "bamei": "ラブラブフォー　　　　　　　　　　　",
+          "P_win": 0.1444,
+          "P_place": 0.433199,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 9,
+          "bamei": "ジューンドラゴン　　　　　　　　　　",
+          "P_win": 0.123771,
+          "P_place": 0.371313,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 1,
+          "bamei": "フレンドローマ　　　　　　　　　　　",
+          "P_win": 0.120333,
+          "P_place": 0.360999,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 11,
+          "bamei": "ノースボブキャット　　　　　　　　　",
+          "P_win": 0.0722,
+          "P_place": 0.216599,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_04",
+      "horses": [
+        {
+          "umaban": 7,
+          "bamei": "トウシンイマジ　　　　　　　　　　　",
+          "P_win": 0.157511,
+          "P_place": 0.472534,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 6,
+          "bamei": "レイジングウェイブ　　　　　　　　　",
+          "P_win": 0.14001,
+          "P_place": 0.42003,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 3,
+          "bamei": "ジュンフィレンツェ　　　　　　　　　",
+          "P_win": 0.130209,
+          "P_place": 0.390628,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 5,
+          "bamei": "ソルベック　　　　　　　　　　　　　",
+          "P_win": 0.116258,
+          "P_place": 0.348775,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 4,
+          "bamei": "ヤモリアツマレ　　　　　　　　　　　",
+          "P_win": 0.0898,
+          "P_place": 0.269399,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_05",
+      "horses": [
+        {
+          "umaban": 5,
+          "bamei": "リトミコ　　　　　　　　　　　　　　",
+          "P_win": 0.266594,
+          "P_place": 0.799781,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 4,
+          "bamei": "クリノサクセス　　　　　　　　　　　",
+          "P_win": 0.10725,
+          "P_place": 0.321751,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 9,
+          "bamei": "ソハヤ　　　　　　　　　　　　　　　",
+          "P_win": 0.103472,
+          "P_place": 0.310417,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 8,
+          "bamei": "ヘブンズサウンド　　　　　　　　　　",
+          "P_win": 0.09425,
+          "P_place": 0.282751,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 1,
+          "bamei": "ロイドバローズ　　　　　　　　　　　",
+          "P_win": 0.090678,
+          "P_place": 0.272034,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_05",
+      "horses": [
+        {
+          "umaban": 6,
+          "bamei": "スルガダイナゴン　　　　　　　　　　",
+          "P_win": 0.193036,
+          "P_place": 0.579108,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 2,
+          "bamei": "ユウユウスキー　　　　　　　　　　　",
+          "P_win": 0.160863,
+          "P_place": 0.48259,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 5,
+          "bamei": "アレンパ　　　　　　　　　　　　　　",
+          "P_win": 0.160863,
+          "P_place": 0.48259,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 4,
+          "bamei": "シューボーイ　　　　　　　　　　　　",
+          "P_win": 0.134053,
+          "P_place": 0.402158,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 7,
+          "bamei": "ヤマノファルコン　　　　　　　　　　",
+          "P_win": 0.129475,
+          "P_place": 0.388426,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_06",
+      "horses": [
+        {
+          "umaban": 3,
+          "bamei": "ホウオウジュレップ　　　　　　　　　",
+          "P_win": 0.128927,
+          "P_place": 0.386781,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 4,
+          "bamei": "ココナッツガーデン　　　　　　　　　",
+          "P_win": 0.122839,
+          "P_place": 0.368517,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 11,
+          "bamei": "ブレストサンダー　　　　　　　　　　",
+          "P_win": 0.10919,
+          "P_place": 0.32757,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 1,
+          "bamei": "エコロタイタン　　　　　　　　　　　",
+          "P_win": 0.089092,
+          "P_place": 0.267276,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 6,
+          "bamei": "ミツカネマーズ　　　　　　　　　　　",
+          "P_win": 0.089092,
+          "P_place": 0.267276,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_06",
+      "horses": [
+        {
+          "umaban": 4,
+          "bamei": "レッグスルー　　　　　　　　　　　　",
+          "P_win": 0.175,
+          "P_place": 0.525,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 8,
+          "bamei": "スカイダンスタイム　　　　　　　　　",
+          "P_win": 0.130952,
+          "P_place": 0.392857,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 10,
+          "bamei": "アースヒロイン　　　　　　　　　　　",
+          "P_win": 0.130263,
+          "P_place": 0.39079,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 3,
+          "bamei": "タノシンダモノガチ　　　　　　　　　",
+          "P_win": 0.08963,
+          "P_place": 0.268889,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 2,
+          "bamei": "ノーブルハーバー　　　　　　　　　　",
+          "P_win": 0.087195,
+          "P_place": 0.261586,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_07",
+      "horses": [
+        {
+          "umaban": 10,
+          "bamei": "オウケンデューク　　　　　　　　　　",
+          "P_win": 0.23658,
+          "P_place": 0.709741,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 4,
+          "bamei": "エウロス　　　　　　　　　　　　　　",
+          "P_win": 0.11414,
+          "P_place": 0.342419,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 6,
+          "bamei": "リタリエイション　　　　　　　　　　",
+          "P_win": 0.101006,
+          "P_place": 0.303017,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 1,
+          "bamei": "アトミックナンバー　　　　　　　　　",
+          "P_win": 0.09378,
+          "P_place": 0.281339,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 9,
+          "bamei": "コモリクイーンダム　　　　　　　　　",
+          "P_win": 0.092003,
+          "P_place": 0.27601,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_07",
+      "horses": [
+        {
+          "umaban": 1,
+          "bamei": "アフロプリンス　　　　　　　　　　　",
+          "P_win": 0.108143,
+          "P_place": 0.324429,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 2,
+          "bamei": "ビギンザビギン　　　　　　　　　　　",
+          "P_win": 0.099824,
+          "P_place": 0.299473,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 7,
+          "bamei": "マイネルウォーリア　　　　　　　　　",
+          "P_win": 0.097678,
+          "P_place": 0.293033,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 3,
+          "bamei": "スプレンデンテ　　　　　　　　　　　",
+          "P_win": 0.073854,
+          "P_place": 0.221561,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 8,
+          "bamei": "マリノバレリーナ　　　　　　　　　　",
+          "P_win": 0.072095,
+          "P_place": 0.216286,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_08",
+      "horses": [
+        {
+          "umaban": 5,
+          "bamei": "ゲンパチルミナス　　　　　　　　　　",
+          "P_win": 0.267128,
+          "P_place": 0.801384,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 6,
+          "bamei": "サランスク　　　　　　　　　　　　　",
+          "P_win": 0.221335,
+          "P_place": 0.664004,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 3,
+          "bamei": "イマヲトキメク　　　　　　　　　　　",
+          "P_win": 0.158096,
+          "P_place": 0.474289,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 2,
+          "bamei": "フォルトリアン　　　　　　　　　　　",
+          "P_win": 0.123498,
+          "P_place": 0.370495,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 4,
+          "bamei": "コアリオ　　　　　　　　　　　　　　",
+          "P_win": 0.117672,
+          "P_place": 0.353015,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_08",
+      "horses": [
+        {
+          "umaban": 1,
+          "bamei": "クールクラバート　　　　　　　　　　",
+          "P_win": 0.150857,
+          "P_place": 0.452572,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 9,
+          "bamei": "カゲツ　　　　　　　　　　　　　　　",
+          "P_win": 0.139253,
+          "P_place": 0.417759,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 4,
+          "bamei": "ハルボタン　　　　　　　　　　　　　",
+          "P_win": 0.105921,
+          "P_place": 0.317764,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 7,
+          "bamei": "レアリザシオン　　　　　　　　　　　",
+          "P_win": 0.099345,
+          "P_place": 0.298036,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 11,
+          "bamei": "オールラウンダー　　　　　　　　　　",
+          "P_win": 0.094724,
+          "P_place": 0.284173,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_09",
+      "horses": [
+        {
+          "umaban": 5,
+          "bamei": "フレイムソード　　　　　　　　　　　",
+          "P_win": 0.178057,
+          "P_place": 0.534172,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 1,
+          "bamei": "ルーラーオブダート　　　　　　　　　",
+          "P_win": 0.139349,
+          "P_place": 0.418048,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 4,
+          "bamei": "コスモブライヤー　　　　　　　　　　",
+          "P_win": 0.126514,
+          "P_place": 0.379543,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 10,
+          "bamei": "アントレゾール　　　　　　　　　　　",
+          "P_win": 0.116124,
+          "P_place": 0.348373,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 7,
+          "bamei": "ルメビーンズ　　　　　　　　　　　　",
+          "P_win": 0.09348,
+          "P_place": 0.28044,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_09",
+      "horses": [
+        {
+          "umaban": 4,
+          "bamei": "ジェットラン　　　　　　　　　　　　",
+          "P_win": 0.127806,
+          "P_place": 0.383418,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 1,
+          "bamei": "カノウセイノケモノ　　　　　　　　　",
+          "P_win": 0.114765,
+          "P_place": 0.344294,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 3,
+          "bamei": "ハクサンシャトル　　　　　　　　　　",
+          "P_win": 0.112049,
+          "P_place": 0.336147,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 6,
+          "bamei": "ランオブザワールド　　　　　　　　　",
+          "P_win": 0.09295,
+          "P_place": 0.278849,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 8,
+          "bamei": "レガント　　　　　　　　　　　　　　",
+          "P_win": 0.092549,
+          "P_place": 0.277648,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_10",
+      "horses": [
+        {
+          "umaban": 5,
+          "bamei": "シャルマンジャン　　　　　　　　　　",
+          "P_win": 0.22271,
+          "P_place": 0.668129,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 3,
+          "bamei": "ユイノコドウ　　　　　　　　　　　　",
+          "P_win": 0.121888,
+          "P_place": 0.365665,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 7,
+          "bamei": "エスプリリチャード　　　　　　　　　",
+          "P_win": 0.109615,
+          "P_place": 0.328845,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 4,
+          "bamei": "ティーズアペックス　　　　　　　　　",
+          "P_win": 0.107378,
+          "P_place": 0.322133,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 1,
+          "bamei": "コーゲンシルバー　　　　　　　　　　",
+          "P_win": 0.092307,
+          "P_place": 0.276922,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_10",
+      "horses": [
+        {
+          "umaban": 4,
+          "bamei": "セレッソサンライズ　　　　　　　　　",
+          "P_win": 0.213102,
+          "P_place": 0.639305,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 3,
+          "bamei": "エドノバイオレット　　　　　　　　　",
+          "P_win": 0.207275,
+          "P_place": 0.621824,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 2,
+          "bamei": "トーホウランボ　　　　　　　　　　　",
+          "P_win": 0.204716,
+          "P_place": 0.614147,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 5,
+          "bamei": "タマモモンレーブ　　　　　　　　　　",
+          "P_win": 0.203638,
+          "P_place": 0.610915,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 1,
+          "bamei": "オニジオオタニ　　　　　　　　　　　",
+          "P_win": 0.171269,
+          "P_place": 0.513808,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_11",
+      "horses": [
+        {
+          "umaban": 3,
+          "bamei": "ボイラーメーカー　　　　　　　　　　",
+          "P_win": 0.148904,
+          "P_place": 0.446713,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 9,
+          "bamei": "ペルソナ　　　　　　　　　　　　　　",
+          "P_win": 0.148904,
+          "P_place": 0.446713,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 1,
+          "bamei": "ダバイグラスノスチ　　　　　　　　　",
+          "P_win": 0.093065,
+          "P_place": 0.279196,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 12,
+          "bamei": "ハナキリ　　　　　　　　　　　　　　",
+          "P_win": 0.086861,
+          "P_place": 0.260583,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 7,
+          "bamei": "フリューゲル　　　　　　　　　　　　",
+          "P_win": 0.085525,
+          "P_place": 0.256574,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_11",
+      "horses": [
+        {
+          "umaban": 11,
+          "bamei": "ポートカルタヘナ　　　　　　　　　　",
+          "P_win": 0.129563,
+          "P_place": 0.388688,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 4,
+          "bamei": "アフロキング　　　　　　　　　　　　",
+          "P_win": 0.10365,
+          "P_place": 0.310951,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 10,
+          "bamei": "グッドルックス　　　　　　　　　　　",
+          "P_win": 0.08292,
+          "P_place": 0.248761,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 5,
+          "bamei": "コスモソンジュ　　　　　　　　　　　",
+          "P_win": 0.078722,
+          "P_place": 0.236165,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 7,
+          "bamei": "ビリーヴホース　　　　　　　　　　　",
+          "P_win": 0.076778,
+          "P_place": 0.230334,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_48_12",
+      "horses": [
+        {
+          "umaban": 7,
+          "bamei": "エイトワン　　　　　　　　　　　　　",
+          "P_win": 0.248154,
+          "P_place": 0.744463,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 6,
+          "bamei": "アルティメットサガ　　　　　　　　　",
+          "P_win": 0.118797,
+          "P_place": 0.356392,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 3,
+          "bamei": "フォルツァエフ　　　　　　　　　　　",
+          "P_win": 0.116322,
+          "P_place": 0.348967,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 5,
+          "bamei": "フィードバック　　　　　　　　　　　",
+          "P_win": 0.087314,
+          "P_place": 0.261941,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 8,
+          "bamei": "ハディア　　　　　　　　　　　　　　",
+          "P_win": 0.083562,
+          "P_place": 0.250687,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0117_44_12",
+      "horses": [
+        {
+          "umaban": 3,
+          "bamei": "ミエノナイスガイ　　　　　　　　　　",
+          "P_win": 0.262313,
+          "P_place": 0.786938,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 12,
+          "bamei": "クリティカルヒット　　　　　　　　　",
+          "P_win": 0.174875,
+          "P_place": 0.524626,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 14,
+          "bamei": "セイウンデイスター　　　　　　　　　",
+          "P_win": 0.075933,
+          "P_place": 0.227798,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 8,
+          "bamei": "アジアジェニファー　　　　　　　　　",
+          "P_win": 0.068429,
+          "P_place": 0.205288,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 9,
+          "bamei": "ベンハー　　　　　　　　　　　　　　",
+          "P_win": 0.06424,
+          "P_place": 0.19272,
+          "rank_pred": 5
+        }
+      ]
+    }
+  ]
+}

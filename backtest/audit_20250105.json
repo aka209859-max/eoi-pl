@@ -1,0 +1,18 @@
+{
+  "audit_meta": {
+    "generated_at": "2026-01-22T14:03:14.086187+09:00",
+    "model_version": "v1.0-PL-PowerEP",
+    "target_date": "20250105",
+    "model_family": "pl_powerep",
+    "alpha": 0.5,
+    "training_unique_horses": 15182,
+    "data_hash": "be97535420b7dd6a",
+    "code_hash": "git:c800885",
+    "model_hash": "5e11900da96ed70b"
+  },
+  "forbidden_check": {
+    "odds_used": false,
+    "popularity_used": false,
+    "status": "PASS"
+  }
+}
