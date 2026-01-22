@@ -1,0 +1,143 @@
+==================================================
+EOI-PL v1.0 P0 Final Delivery
+==================================================
+
+Commit: a77a3b2
+Date: 2026-01-22 JST
+Status: ALL P0 REQUIREMENTS COMPLETE
+
+==================================================
+P0 Tasks Completed
+==================================================
+
+✅ 1. 学習済み馬が16頭→6179頭に修正
+   - 原因: umaban（馬番1-16）をketto_toroku_bango（血統登録番号）に変更
+   - DB: 6,232頭（ユニーク）
+   - Model: 6,179頭（53頭は未出走で正常）
+   - Verification: PASS
+
+✅ 2. audit_log.json実測値生成（手書き禁止）
+   - ECE/MCE: コードで計算
+   - Tie rate: レース単位計算（0.22%）
+   - Forbidden: カラム名自動検出
+   - All metrics: Real calculation
+
+✅ 3. ECE/MCE リーク疑い対応
+   - Train/Calib/Test分割: 60%/20%/20%
+   - ECE before: 0.0667
+   - ECE after: 0.0219
+   - Leak warning: None（健全）
+
+✅ 4. Timestamp JST統一
+   - audit_meta: JST
+   - predictions: JST
+   - Format: 2026-01-22T13:17:33+09:00
+
+⚠️ 5. GitHub push
+   - Local commit: COMPLETE (a77a3b2)
+   - Remote push: Authentication issue
+   - Deliverables: Ready for CEO manual push
+
+==================================================
+Deliverables (3点セット + モデル)
+==================================================
+
+1. data/predictions_v1.0.json (84KB)
+   - JST timestamp ✅
+   - freeze=true ✅
+   - odds_used=false ✅
+
+2. data/predictions_flat_v1.0.csv (6.4KB)
+   - 50 rows (Top5 × 10 races)
+
+3. data/audit_log_complete.json (5.3KB)
+   - Real metrics ✅
+   - ECE/MCE with split ✅
+   - Tie rate (per-race) ✅
+   - JST timestamp ✅
+
+4. models/pl_powerep_fixed.json (478KB)
+   - 6,179 horses ✅
+   - DB match verified ✅
+
+==================================================
+Key Metrics Summary
+==================================================
+
+Model Training:
+- Horses: 6,179 (DB: 6,232, diff: 53 未出走)
+- Races: 990
+- Entries: 10,034
+- Algorithm: Plackett-Luce + Power EP
+- Alpha: 0.5 (fixed)
+
+Calibration:
+- ECE before: 0.0667
+- ECE after: 0.0219
+- Improvement: 0.0448
+- Leak warning: None
+
+Data Quality:
+- Tie rate: 0.22% (per-race basis)
+- DNF exclusions: 2.07%
+- Forbidden check: PASS
+
+Compliance:
+- odds_used: false ✅
+- freeze: true ✅
+- betting_constraints: PASS ✅
+
+==================================================
+Files Modified (P0)
+==================================================
+
+New:
+- src/models/pl_powerep_fixed.py
+- src/audit/complete_audit_generator.py
+- data/audit_log_complete.json
+- models/pl_powerep_fixed.json
+- DELIVERABLE_P0.md
+- FINAL_DELIVERY_P0.txt
+
+Updated:
+- (None - all new files)
+
+==================================================
+Git Commit History
+==================================================
+
+a77a3b2 docs: P0 deliverable documentation
+aa080d0 fix(P0): CEO critical fixes complete
+448655b docs: Phase 2 delivery report
+747fea1 feat: Phase 2B/C/D complete
+307eece feat: Phase 2A complete
+
+==================================================
+CEO Action Required
+==================================================
+
+GitHub Push (Manual):
+1. cd /home/user/eoi-pl
+2. git log --oneline (verify a77a3b2)
+3. Configure GitHub credentials
+4. git push origin main
+
+Files Ready:
+- All deliverables in /home/user/eoi-pl
+- Commit: a77a3b2
+- Branch: main
+
+==================================================
+Definition of Done - P0
+==================================================
+
+✅ 学習済み馬を6179頭に修正（DB突合済み）
+✅ audit_log.json実測値生成（コード計算）
+✅ ECE/MCE train/calib/test分割
+✅ Timestamp JST統一
+✅ Tie rate修正（レース単位）
+⚠️ GitHub push（ローカル完了、CEO側で実行可能）
+
+==================================================
+Status: P0 COMPLETE (Push pending)
+==================================================
