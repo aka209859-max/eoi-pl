@@ -1,6 +1,6 @@
 {
   "audit_meta": {
-    "generated_at": "2026-01-22T03:54:16.133287",
+    "generated_at": "2026-01-22T04:22:43.103567",
     "model_version": "v1.0-PL-PowerEP",
     "phase": "2A_minimal"
   },
@@ -12,48 +12,56 @@
     "tol": 0.001,
     "training_races": 990,
     "training_entries": 10034,
-    "num_horses": 16,
+    "num_horses": 6179,
+    "num_horses_db": 6179,
+    "num_horses_model": 6179,
+    "horse_count_match": true,
     "converged": false,
     "iterations": 50,
-    "final_loss": 69457.94372801967
+    "final_loss": 12582.382535291401
   },
   "sample_predictions": [
     {
       "race_id": "2025_0101_45_01",
       "top5": [
         {
-          "umaban": 4,
-          "skill_mu": 8.94164884905842,
+          "horse_id": "2022106497",
+          "umaban": 13,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.5783049975749347,
+          "P_win_raw": 0.07692307692307693,
           "rank_pred": 1
         },
         {
-          "umaban": 8,
-          "skill_mu": 6.496772657660571,
+          "horse_id": "2022106105",
+          "umaban": 12,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.17031732440975558,
+          "P_win_raw": 0.07692307692307693,
           "rank_pred": 2
         },
         {
-          "umaban": 10,
-          "skill_mu": 5.289033944470268,
+          "horse_id": "2022100314",
+          "umaban": 11,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.09311115129088507,
+          "P_win_raw": 0.07692307692307693,
           "rank_pred": 3
         },
         {
-          "umaban": 12,
-          "skill_mu": 4.671850969904403,
+          "horse_id": "2022103936",
+          "umaban": 10,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.06838834855722167,
+          "P_win_raw": 0.07692307692307693,
           "rank_pred": 4
         },
         {
-          "umaban": 13,
-          "skill_mu": 4.21860334969347,
+          "horse_id": "2022105922",
+          "umaban": 9,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.05452060247408405,
+          "P_win_raw": 0.07692307692307693,
           "rank_pred": 5
         }
       ]
@@ -62,38 +70,43 @@
       "race_id": "2025_0101_45_02",
       "top5": [
         {
+          "horse_id": "2021106116",
           "umaban": 4,
-          "skill_mu": 8.94164884905842,
+          "skill_mu": 0.5690683040910155,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.5472362413800294,
+          "P_win_raw": 0.09165640882555676,
           "rank_pred": 1
         },
         {
-          "umaban": 8,
-          "skill_mu": 6.496772657660571,
+          "horse_id": "2021106535",
+          "umaban": 3,
+          "skill_mu": 0.31779648048714937,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.16116722636452882,
+          "P_win_raw": 0.0808350765637206,
           "rank_pred": 2
         },
         {
-          "umaban": 10,
-          "skill_mu": 5.289033944470268,
+          "horse_id": "2021102127",
+          "umaban": 12,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.08810886414030826,
+          "P_win_raw": 0.06895904288422688,
           "rank_pred": 3
         },
         {
-          "umaban": 12,
-          "skill_mu": 4.671850969904403,
+          "horse_id": "2021106919",
+          "umaban": 11,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.0647142649217587,
+          "P_win_raw": 0.06895904288422688,
           "rank_pred": 4
         },
         {
+          "horse_id": "2021101608",
           "umaban": 14,
-          "skill_mu": 4.299600784186817,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.05372382449605152,
+          "P_win_raw": 0.06895904288422688,
           "rank_pred": 5
         }
       ]
@@ -102,38 +115,43 @@
       "race_id": "2025_0101_45_03",
       "top5": [
         {
-          "umaban": 4,
-          "skill_mu": 8.94164884905842,
+          "horse_id": "2022104142",
+          "umaban": 14,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.5472362413800294,
+          "P_win_raw": 0.07142857142857142,
           "rank_pred": 1
         },
         {
-          "umaban": 8,
-          "skill_mu": 6.496772657660571,
+          "horse_id": "2022103085",
+          "umaban": 13,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.16116722636452882,
+          "P_win_raw": 0.07142857142857142,
           "rank_pred": 2
         },
         {
-          "umaban": 10,
-          "skill_mu": 5.289033944470268,
+          "horse_id": "2022102379",
+          "umaban": 12,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.08810886414030826,
+          "P_win_raw": 0.07142857142857142,
           "rank_pred": 3
         },
         {
-          "umaban": 12,
-          "skill_mu": 4.671850969904403,
+          "horse_id": "2022100576",
+          "umaban": 11,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.0647142649217587,
+          "P_win_raw": 0.07142857142857142,
           "rank_pred": 4
         },
         {
-          "umaban": 14,
-          "skill_mu": 4.299600784186817,
+          "horse_id": "2022102326",
+          "umaban": 10,
+          "skill_mu": 0.0,
           "skill_sigma": 1.0,
-          "P_win_raw": 0.05372382449605152,
+          "P_win_raw": 0.07142857142857142,
           "rank_pred": 5
         }
       ]

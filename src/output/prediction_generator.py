@@ -18,10 +18,13 @@ import json
 import csv
 import hashlib
 import psycopg2
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import List, Dict
 import sys
 import os
+
+# JSTタイムゾーン
+JST = timezone(timedelta(hours=9))
 
 # モジュール追加
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -200,7 +203,7 @@ class PredictionOutputGenerator:
         hashes = self.calculate_hashes(f"{target_date}_{len(races_output)}")
         
         # JST時刻
-        jst_now = datetime.now(timezone.utc).astimezone()
+        jst_now = datetime.now(JST)
         
         predictions = {
             'meta': {

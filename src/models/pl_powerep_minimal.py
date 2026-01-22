@@ -29,19 +29,19 @@ class PlackettLuceModel:
         self.skills = {}  # horse_id -> (mu, sigma)
         self.convergence_log = []
         
-    def fit_listmle(self, race_data: Dict[str, List[Tuple[int, int]]], 
+    def fit_listmle(self, race_data: Dict[str, List[Tuple[str, int]]], 
                     max_iter: int = MAX_ITER, tol: float = TOL) -> Dict:
         """
         ListMLE学習 (簡易版)
-        race_data: {race_id: [(umaban, rank), ...]}
+        race_data: {race_id: [(horse_id, rank), ...]}
         """
         print(f"🎯 Starting ListMLE training (α={self.alpha}, max_iter={max_iter}, tol={tol})")
         
         # 全馬のスキル初期化
         all_horses = set()
         for entries in race_data.values():
-            for umaban, rank in entries:
-                all_horses.add(umaban)
+            for horse_id, rank in entries:
+                all_horses.add(horse_id)
         
         # 初期スキル: 平均0, 分散1
         for horse_id in all_horses:
@@ -61,7 +61,7 @@ class PlackettLuceModel:
             for race_id, entries in race_data.items():
                 # 順位でソート
                 sorted_entries = sorted(entries, key=lambda x: x[1])
-                horse_ids = [umaban for umaban, rank in sorted_entries]
+                horse_ids = [horse_id for horse_id, rank in sorted_entries]
                 
                 # PL尤度の勾配計算
                 for i, horse_i in enumerate(horse_ids):
@@ -116,23 +116,25 @@ class PlackettLuceModel:
             'num_horses': len(self.skills)
         }
     
-    def predict_top5(self, race_entries: List[int]) -> List[Dict]:
+    def predict_top5(self, race_entries: List[Dict]) -> List[Dict]:
         """
         Power EP推論でTop5を予測
-        race_entries: [umaban1, umaban2, ...]
+        race_entries: [{'horse_id': ..., 'umaban': ...}, ...]
         """
         # スキルを取得
         skills = []
-        for umaban in race_entries:
-            if umaban in self.skills:
-                skills.append(self.skills[umaban]['mu'])
+        for entry in race_entries:
+            horse_id = entry['horse_id']
+            umaban = entry['umaban']
+            if horse_id in self.skills:
+                skills.append((horse_id, umaban, self.skills[horse_id]['mu']))
             else:
                 # 未知の馬は平均スキル（0.0）
-                skills.append(0.0)
+                skills.append((horse_id, umaban, 0.0))
         
         # Power EP (簡易版: softmax with temperature)
         # α=0.5 の場合、スキルを √(skill) でスケーリング
-        scaled_skills = np.array(skills) * self.alpha
+        scaled_skills = np.array([s[2] for s in skills]) * self.alpha
         exp_skills = np.exp(scaled_skills)
         probs = exp_skills / np.sum(exp_skills)
         
@@ -141,14 +143,16 @@ class PlackettLuceModel:
         
         results = []
         for idx in top5_indices:
-            umaban = race_entries[idx]
-            skill = skills[idx]
+            horse_id = skills[idx][0]
+            umaban = skills[idx][1]
+            skill = skills[idx][2]
             prob = float(probs[idx])
             
             results.append({
+                'horse_id': str(horse_id),
                 'umaban': int(umaban),
                 'skill_mu': float(skill),
-                'skill_sigma': float(self.skills.get(umaban, {}).get('sigma', 1.0)),
+                'skill_sigma': float(self.skills.get(horse_id, {}).get('sigma', 1.0)),
                 'P_win_raw': prob,
                 'rank_pred': len(results) + 1
             })
@@ -177,6 +181,7 @@ def main():
     query = '''
     SELECT 
         e.race_id,
+        e.ketto_toroku_bango as horse_id,
         e.umaban,
         e.kakutei_chakujun as rank
     FROM entries e
@@ -184,6 +189,8 @@ def main():
     WHERE r.race_id LIKE '2024%'
         AND e.kakutei_chakujun IS NOT NULL
         AND e.kakutei_chakujun > 0
+        AND e.ketto_toroku_bango IS NOT NULL
+        AND e.ketto_toroku_bango != ''
         AND e.race_id IN (
             SELECT DISTINCT e2.race_id 
             FROM entries e2
@@ -199,11 +206,16 @@ def main():
     rows = cur.fetchall()
     
     # レース単位でデータを整理
+    # race_data: {race_id: [(horse_id, rank), ...]}
+    # umaban_map: {race_id: {horse_id: umaban}}
     race_data = {}
-    for race_id, umaban, rank in rows:
+    umaban_map = {}
+    for race_id, horse_id, umaban, rank in rows:
         if race_id not in race_data:
             race_data[race_id] = []
-        race_data[race_id].append((umaban, rank))
+            umaban_map[race_id] = {}
+        race_data[race_id].append((horse_id, rank))
+        umaban_map[race_id][horse_id] = umaban
     
     print(f"✅ Loaded {len(race_data)} races, {len(rows)} entries")
     
@@ -223,12 +235,15 @@ def main():
     test_query = '''
     SELECT 
         e.race_id,
+        e.ketto_toroku_bango as horse_id,
         e.umaban,
         e.bamei,
         e.kakutei_chakujun as actual_rank
     FROM entries e
     INNER JOIN races r ON e.race_id = r.race_id
     WHERE e.race_id LIKE '2025_0101%'
+        AND e.ketto_toroku_bango IS NOT NULL
+        AND e.ketto_toroku_bango != ''
     ORDER BY e.race_id, e.umaban
     LIMIT 120
     '''
@@ -238,10 +253,10 @@ def main():
     
     # レース単位で整理
     test_races = {}
-    for race_id, umaban, bamei, actual_rank in test_rows:
+    for race_id, horse_id, umaban, bamei, actual_rank in test_rows:
         if race_id not in test_races:
             test_races[race_id] = {'entries': [], 'names': {}, 'actuals': {}}
-        test_races[race_id]['entries'].append(umaban)
+        test_races[race_id]['entries'].append({'horse_id': horse_id, 'umaban': umaban})
         test_races[race_id]['names'][umaban] = bamei
         if actual_rank:
             test_races[race_id]['actuals'][umaban] = actual_rank
@@ -293,6 +308,39 @@ def main():
     print("✅ Model saved to models/pl_powerep_model.json")
     
     # 監査ログ（最小版）
+    # DB実測値と照合
+    cur.execute("""
+        SELECT COUNT(DISTINCT ketto_toroku_bango) 
+        FROM entries e
+        INNER JOIN races r ON e.race_id = r.race_id
+        WHERE r.race_id LIKE '2024%'
+            AND e.kakutei_chakujun IS NOT NULL
+            AND e.kakutei_chakujun > 0
+            AND e.ketto_toroku_bango IS NOT NULL
+            AND e.ketto_toroku_bango != ''
+            AND e.race_id IN (
+                SELECT DISTINCT e2.race_id 
+                FROM entries e2
+                INNER JOIN races r2 ON e2.race_id = r2.race_id
+                WHERE r2.race_id LIKE '2024%'
+                ORDER BY e2.race_id 
+                LIMIT 1000
+            )
+    """)
+    db_horse_count = cur.fetchone()[0]
+    
+    # モデル内部のhorse_id数
+    model_horse_count = len(model.skills)
+    
+    # 突合チェック
+    if db_horse_count != model_horse_count:
+        raise RuntimeError(
+            f"❌ FAIL: Horse count mismatch! "
+            f"DB={db_horse_count}, Model={model_horse_count}"
+        )
+    
+    print(f"\n✅ Horse count validation: DB={db_horse_count}, Model={model_horse_count}")
+    
     audit_log = {
         'audit_meta': {
             'generated_at': datetime.now().isoformat(),
@@ -308,6 +356,9 @@ def main():
             'training_races': int(len(race_data)),
             'training_entries': int(len(rows)),
             'num_horses': int(training_result['num_horses']),
+            'num_horses_db': int(db_horse_count),
+            'num_horses_model': int(model_horse_count),
+            'horse_count_match': db_horse_count == model_horse_count,
             'converged': bool(training_result['converged']),
             'iterations': int(training_result['iterations']),
             'final_loss': float(training_result['final_loss'])
@@ -315,6 +366,7 @@ def main():
         'sample_predictions': [{
             'race_id': pred['race_id'],
             'top5': [{
+                'horse_id': str(horse.get('horse_id', '')),
                 'umaban': int(horse['umaban']),
                 'skill_mu': float(horse['skill_mu']),
                 'skill_sigma': float(horse['skill_sigma']),
