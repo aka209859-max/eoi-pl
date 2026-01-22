@@ -1,0 +1,14 @@
+{
+  "start_time": "2026-01-22T03:31:28.843118",
+  "end_time": "2026-01-22T03:32:20.896314",
+  "training_time_seconds": 52.053196,
+  "n_races": 100,
+  "n_horses": 1068,
+  "power_ep": {
+    "alpha": 0.5,
+    "iterations": 50,
+    "converged": false,
+    "final_max_delta": 0.012984254119979166,
+    "convergence_criterion": 0.0001
+  }
+}

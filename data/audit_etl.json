@@ -1,0 +1,36 @@
+{
+  "data_hash": "sha256:657fc53844132c6abc70251adebfa72e30e305d697acbfdd7d4c3e47126a85a0",
+  "exclusion_audit": {
+    "original_count": 141299,
+    "excluded_count": 2926,
+    "final_count": 138373,
+    "exclusion_rate": 0.020707860635956376,
+    "reasons": [
+      {
+        "reason": "missing_or_invalid_rank",
+        "count": 2926,
+        "sample_race_ids": [
+          "2024_0101_45_02",
+          "2024_0101_54_10",
+          "2024_0101_54_12",
+          "2024_0102_45_03",
+          "2024_0102_45_11"
+        ]
+      }
+    ]
+  },
+  "data_quality": {
+    "total_races": 13677,
+    "total_entries": 138373,
+    "date_range": {
+      "min": 2024,
+      "max": 2024
+    },
+    "join_rate": 1.0,
+    "missing_rates": {
+      "bataiju": 0.0,
+      "corner_1": 0.0,
+      "kohan_3f": 0.0
+    }
+  }
+}

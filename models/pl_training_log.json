@@ -1,0 +1,17 @@
+[
+  {
+    "method": "ListMLE",
+    "converged": true,
+    "final_ll": -0.0001841470313079796,
+    "iterations": 26,
+    "n_horses": 1040,
+    "n_races": 100
+  },
+  {
+    "method": "Power EP",
+    "alpha": 0.5,
+    "converged": false,
+    "iterations": 50,
+    "max_change": 0.0024999999999977263
+  }
+]

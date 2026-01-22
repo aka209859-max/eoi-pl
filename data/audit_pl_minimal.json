@@ -1,0 +1,142 @@
+{
+  "audit_meta": {
+    "generated_at": "2026-01-22T03:54:16.133287",
+    "model_version": "v1.0-PL-PowerEP",
+    "phase": "2A_minimal"
+  },
+  "model_training": {
+    "algorithm": "Plackett-Luce + Power EP",
+    "learning_method": "ListMLE",
+    "alpha": 0.5,
+    "max_iter": 50,
+    "tol": 0.001,
+    "training_races": 990,
+    "training_entries": 10034,
+    "num_horses": 16,
+    "converged": false,
+    "iterations": 50,
+    "final_loss": 69457.94372801967
+  },
+  "sample_predictions": [
+    {
+      "race_id": "2025_0101_45_01",
+      "top5": [
+        {
+          "umaban": 4,
+          "skill_mu": 8.94164884905842,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.5783049975749347,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 8,
+          "skill_mu": 6.496772657660571,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.17031732440975558,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 10,
+          "skill_mu": 5.289033944470268,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.09311115129088507,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 12,
+          "skill_mu": 4.671850969904403,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.06838834855722167,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 13,
+          "skill_mu": 4.21860334969347,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.05452060247408405,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0101_45_02",
+      "top5": [
+        {
+          "umaban": 4,
+          "skill_mu": 8.94164884905842,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.5472362413800294,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 8,
+          "skill_mu": 6.496772657660571,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.16116722636452882,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 10,
+          "skill_mu": 5.289033944470268,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.08810886414030826,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 12,
+          "skill_mu": 4.671850969904403,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.0647142649217587,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 14,
+          "skill_mu": 4.299600784186817,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.05372382449605152,
+          "rank_pred": 5
+        }
+      ]
+    },
+    {
+      "race_id": "2025_0101_45_03",
+      "top5": [
+        {
+          "umaban": 4,
+          "skill_mu": 8.94164884905842,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.5472362413800294,
+          "rank_pred": 1
+        },
+        {
+          "umaban": 8,
+          "skill_mu": 6.496772657660571,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.16116722636452882,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 10,
+          "skill_mu": 5.289033944470268,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.08810886414030826,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 12,
+          "skill_mu": 4.671850969904403,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.0647142649217587,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 14,
+          "skill_mu": 4.299600784186817,
+          "skill_sigma": 1.0,
+          "P_win_raw": 0.05372382449605152,
+          "rank_pred": 5
+        }
+      ]
+    }
+  ]
+}
