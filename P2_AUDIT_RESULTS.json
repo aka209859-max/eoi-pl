@@ -1,0 +1,40 @@
+{
+  "definitions": {
+    "Top1命中": {
+      "definition": "argmax(P_win_pred) == actual_rank == 1",
+      "formula": "pred_umaban[argmax(P_win)] == actual_umaban[rank=1]",
+      "explanation": "予測1位の馬番が実際の1着馬と一致"
+    },
+    "Top3命中": {
+      "definition": "actual_rank in [1,2,3] AND actual_umaban in pred_top3_umaban",
+      "formula": "実際のTop3馬番が予測Top3に含まれる（少なくとも1頭）",
+      "explanation": "予測Top3のうち、実際のTop3（1,2,3着）に入った馬が1頭以上"
+    },
+    "Top5命中": {
+      "definition": "actual_rank in [1,2,3,4,5] AND actual_umaban in pred_top5_umaban",
+      "formula": "実際のTop5馬番が予測Top5に含まれる（少なくとも1頭）",
+      "explanation": "予測Top5のうち、実際のTop5（1~5着）に入った馬が1頭以上"
+    }
+  },
+  "leak_zero": {
+    "race_id_split": true,
+    "date_comparison": true,
+    "kakutei_unused": true,
+    "train_races": 13777,
+    "test_races": 45
+  },
+  "sanity_shuffle": {
+    "shuffle_top1": 0.044444444444444446,
+    "shuffle_top3": 0.5777777777777777,
+    "shuffle_top5": 1.0
+  },
+  "sanity_freeze": {
+    "file_hash": "dfbfd616a492aa46",
+    "rows": 225
+  },
+  "sanity_detailed": {
+    "race_id": "2025_0115_44_01",
+    "num_horses": 10,
+    "top3_hit": true
+  }
+}
