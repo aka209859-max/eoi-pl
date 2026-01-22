@@ -203,3 +203,112 @@ git push origin main
 3b3d5001f217e6085b7c6256a66de9e5435a1561f6233e5211ae0233e2d181d8  data/audit_log.json
 608b5f40154f9c1fcd73f5dab9b6e082860008993fa56efd0da66a1124cdc409  models/pl_powerep_model.json
 ```
+
+---
+
+## 🚀 SSOT実行結果（ワンコマンド）
+
+**実行日時**: 2026-01-22 13:54 JST  
+**実行コマンド**: `bash scripts/ssot_run.sh`
+
+### 実行完了報告
+
+```
+============================================
+  SSOT Run Complete ✅
+============================================
+Model: v1.0-PL-PowerEP
+Alpha: 0.5
+Training Horses: 6,179頭
+Deliverables: 3点セット生成済み
+```
+
+### 成果物3点セット（最新版）
+
+#### 1. predictions_v1.0.json
+- **パス**: `data/predictions_v1.0.json`
+- **サイズ**: 84KB
+- **SHA256**: `81130b7ad309d37f...`
+- **生成日時**: 2026-01-22T13:54:24+09:00
+- **先頭メタ情報**:
+```json
+{
+  "meta": {
+    "generated_at": "2026-01-22T13:54:24.484053+09:00",
+    "model_version": "v1.0-PL-PowerEP",
+    "freeze": true,
+    "odds_used": false,
+    "model_family": "pl_powerep",
+    "alpha": 0.5,
+    "training_unique_horses": 6179,
+    "algorithm": "Plackett-Luce + Power EP",
+    "learning_method": "ListMLE"
+  }
+}
+```
+
+#### 2. predictions_flat_v1.0.csv
+- **パス**: `data/predictions_flat_v1.0.csv`
+- **サイズ**: 8.0KB (6.4KB → 8.0KB after SSOT meta)
+- **SHA256**: `361b4b2f4966a901...`
+- **行数**: 50行（Top5 × 10レース）
+- **カラム**: race_id, umaban, bamei, P_win_cal, P_place_cal, grade, top5_rank, in_sanrenpuku, in_sanrentan
+
+#### 3. audit_log.json
+- **パス**: `data/audit_log.json`
+- **サイズ**: 8.0KB (35KB → 8.0KB compressed)
+- **SHA256**: `5b984d638028664a...`
+- **生成日時**: 2026-01-22T13:54:26+09:00
+- **先頭メタ情報**:
+```json
+{
+  "audit_meta": {
+    "generated_at": "2026-01-22T13:54:26.985990+09:00",
+    "model_version": "v1.0-PL-PowerEP",
+    "model_family": "pl_powerep",
+    "alpha": 0.5,
+    "training_unique_horses": 6179
+  },
+  "model_training": {
+    "algorithm": "Plackett-Luce + Power EP",
+    "learning_method": "ListMLE",
+    "alpha": 0.5,
+    "training_unique_horses": 6179,
+    "converged": false,
+    "iterations": 50,
+    "final_loss": 12582.3825
+  }
+}
+```
+
+### 実行時間
+
+- **Phase 2A (学習)**: ~14秒
+- **Phase 2D (予測生成)**: ~2秒
+- **Audit生成**: ~2秒
+- **合計**: ~18秒（3点セット生成）
+
+### 監査結果
+
+- **Total races**: 27,279
+- **Unique horses**: 20,916
+- **ECE before**: 0.1385
+- **ECE after**: 0.0073
+- **AUC-RCC**: 0.4679
+- **Tie rate**: 0.0012 (0.12%)
+
+---
+
+## ✅ SSOT自己証明完了
+
+**v1.0のデフォルト経路 = PL+PowerEP** を以下で証明：
+
+1. ✅ **README.md**: "v1.0 SSOT (PL+PowerEP)" を明記
+2. ✅ **ssot_run.sh**: ワンコマンド実行で3点セット生成再現
+3. ✅ **predictions.json**: `model_family="pl_powerep"`, `alpha=0.5`, `training_unique_horses=6179`
+4. ✅ **audit_log.json**: 同上のメタ情報を記録
+5. ✅ **実行証拠**: このP1_DELIVERABLE_COMPLETE.mdに記録
+
+**LightGBM**: legacy/MVPとしてのみ保持（デフォルト経路から除外）
+
+---

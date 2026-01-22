@@ -1,11 +1,14 @@
 {
   "audit_meta": {
-    "generated_at": "2026-01-22T13:33:54.938890+09:00",
+    "generated_at": "2026-01-22T13:54:26.985990+09:00",
     "model_version": "v1.0-PL-PowerEP",
     "target_date": "2025_0101",
     "data_hash": "996e5c32de29ddb4",
     "model_hash": "a7422420bfe33b3b",
-    "code_hash": "git:448655b"
+    "code_hash": "git:448655b",
+    "model_family": "pl_powerep",
+    "alpha": 0.5,
+    "training_unique_horses": 6179
   },
   "data_quality": {
     "total_races": 27279,
@@ -37,6 +40,7 @@
     "alpha": 0.5,
     "training_period": "2024",
     "num_horses": 6179,
+    "training_unique_horses": 6179,
     "converged": false,
     "iterations": 50,
     "final_loss": 12582.382535291401

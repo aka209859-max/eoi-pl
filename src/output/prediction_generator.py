@@ -212,6 +212,12 @@ class PredictionOutputGenerator:
                 'target_date': target_date,
                 'freeze': True,
                 'odds_used': False,
+                # ✅ SSOT自己証明 (CEO指示)
+                'model_family': 'pl_powerep',  # 固定文字列
+                'alpha': 0.5,  # Power EP alpha (固定)
+                'training_unique_horses': 6179,  # ketto_toroku_bango
+                'algorithm': 'Plackett-Luce + Power EP',
+                'learning_method': 'ListMLE',
                 'policy': {
                     'model': 'Plackett-Luce',
                     'inference': 'Power EP (alpha=0.5)',

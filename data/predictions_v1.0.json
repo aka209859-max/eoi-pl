@@ -1,10 +1,15 @@
 {
   "meta": {
-    "generated_at": "2026-01-22T13:24:40.457312+09:00",
+    "generated_at": "2026-01-22T13:54:24.484053+09:00",
     "model_version": "v1.0-PL-PowerEP",
     "target_date": "2025_0101",
     "freeze": true,
     "odds_used": false,
+    "model_family": "pl_powerep",
+    "alpha": 0.5,
+    "training_unique_horses": 6179,
+    "algorithm": "Plackett-Luce + Power EP",
+    "learning_method": "ListMLE",
     "policy": {
       "model": "Plackett-Luce",
       "inference": "Power EP (alpha=0.5)",
