@@ -60,9 +60,9 @@ class WalkForwardBacktest:
         """, (limit,))
         return [row[0] for row in self.cur.fetchall()]
     
-    def train_pl_powerep(self, train_year: int) -> Dict:
-        """PL+PowerEP学習（簡易版）"""
-        # 学習データロード
+    def train_pl_powerep(self, train_year_start: int, train_year_end: int) -> Dict:
+        """PL+PowerEP学習（簡易版）- 複数年対応"""
+        # 学習データロード（複数年）
         self.cur.execute("""
             SELECT 
                 r.race_id,
@@ -70,11 +70,11 @@ class WalkForwardBacktest:
                 e.kakutei_chakujun
             FROM entries e
             INNER JOIN races r ON e.race_id = r.race_id
-            WHERE r.kaisai_nen = %s
+            WHERE r.kaisai_nen >= %s AND r.kaisai_nen <= %s
                 AND e.kakutei_chakujun IS NOT NULL
                 AND e.kakutei_chakujun > 0
                 AND e.ketto_toroku_bango IS NOT NULL
-        """, (train_year,))
+        """, (train_year_start, train_year_end))
         
         rows = self.cur.fetchall()
         
@@ -96,7 +96,8 @@ class WalkForwardBacktest:
         return {
             'skills': skills,
             'num_horses': len(skills),
-            'train_year': train_year,
+            'train_year_start': train_year_start,
+            'train_year_end': train_year_end,
             'alpha': 0.5,
             'model_version': 'v1.0-PL-PowerEP'
         }
@@ -227,10 +228,10 @@ class WalkForwardBacktest:
             date_str = f"2025{test_day:04d}"
             print(f"[{i}/{len(test_days)}] Testing {date_str}...")
             
-            # 学習（2024年のみ）
-            train_year = 2024
-            model = self.train_pl_powerep(train_year)
-            print(f"  ✅ Trained: {model['num_horses']} horses (year={train_year})")
+            # 学習（2020-2024年 = 5年分）
+            train_year_start, train_year_end = 2020, 2024
+            model = self.train_pl_powerep(train_year_start, train_year_end)
+            print(f"  ✅ Trained: {model['num_horses']} horses (years={train_year_start}-{train_year_end})")
             
             # テスト対象レース取得
             self.cur.execute("""
