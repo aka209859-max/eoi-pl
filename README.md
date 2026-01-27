@@ -69,12 +69,11 @@ cd /home/user/eoi-pl && python3 src/audit/complete_audit_generator.py
 - **Algorithm**: Plackett-Luce + Power EP
 - **Learning Method**: ListMLE
 - **Alpha**: 0.5 (固定)
-- **Training Races**: 990 (2024年)
-- **Training Entries**: 10,034
-- **Unique Horses**: 6,179頭 (ketto_toroku_bango)
-- **Iterations**: 50
-- **Final Loss**: 12,582.38
-- **Converged**: False (⚠️ WARN - max iterations reached)
+- **Training Period**: 2020-2024年 (5年分) ✅
+- **Training Races**: 66,668レース ✅
+- **Training Entries**: 671,700 ✅
+- **Unique Horses**: 34,892頭 (ketto_toroku_bango) ✅
+- **Model Version**: v1.1-PL-PowerEP-5Y
 
 ### Calibration & Audit
 
@@ -86,10 +85,10 @@ cd /home/user/eoi-pl && python3 src/audit/complete_audit_generator.py
 
 ### Data Scale
 
-- **Total Races**: 27,279 (全期間)
-- **Total Entries**: 276,115
-- **Unique Horses**: 20,916頭
-- **Training Period**: 2024年
+- **Total Races**: 80,094レース (2020-2025年) ✅
+- **Total Entries**: 809,357 ✅
+- **Unique Horses**: 40,562頭 ✅
+- **Training Period**: 2020-2024年 (5年分) ✅
 
 ---
 
