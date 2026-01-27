@@ -1,9 +1,9 @@
 {
   "meta": {
-    "generated_at": "2026-01-22 09:36:55 JST",
+    "generated_at": "2026-01-27 13:11:02 JST",
     "input_file": "backtest/backtest_detail.csv",
     "race_count": 929,
-    "detail_hash": "e000bb0c53c25b7f",
+    "detail_hash": "5e9605adeea2de07",
     "cross_check": {
       "existing_backtest_summary_top3_ge1": "matched",
       "existing_backtest_summary_top5_ge1": "matched"
@@ -12,30 +12,30 @@
   "overall": {
     "races": 929,
     "top3_ge1": 853,
-    "top3_ge2": 476,
+    "top3_ge2": 474,
     "top3_eq3": 68,
     "top5_ge3": 731,
-    "top5_eq5": 36,
+    "top5_eq5": 34,
     "top3_ge1_rate": 0.9182,
-    "top3_ge2_rate": 0.5124,
+    "top3_ge2_rate": 0.5102,
     "top3_eq3_rate": 0.0732,
     "top5_ge3_rate": 0.7869,
-    "top5_eq5_rate": 0.0388
+    "top5_eq5_rate": 0.0366
   },
   "daily": [
     {
       "date": "20250101",
       "races": 33,
       "top3_ge1": 30,
-      "top3_ge2": 19,
+      "top3_ge2": 17,
       "top3_eq3": 2,
       "top5_ge3": 21,
-      "top5_eq5": 2,
+      "top5_eq5": 0,
       "top3_ge1_rate": 0.9091,
-      "top3_ge2_rate": 0.5758,
+      "top3_ge2_rate": 0.5152,
       "top3_eq3_rate": 0.0606,
       "top5_ge3_rate": 0.6364,
-      "top5_eq5_rate": 0.0606
+      "top5_eq5_rate": 0.0
     },
     {
       "date": "20250102",

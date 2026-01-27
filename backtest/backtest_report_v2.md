@@ -1,6 +1,6 @@
 # Auditable Backtest Report v2 - EOI-PL v1.0-Prime
 
-**Generated**: 2026-01-22 09:36:55 JST
+**Generated**: 2026-01-27 13:11:02 JST
 
 ## Overview
 
@@ -24,16 +24,16 @@ Example: pred_top3='8|5|2', actual_top3='8|7|9' → overlap={8} → Top3≥1=1, 
 ## Overall Results (929 races)
 
 - **Top3≥1**: 853/929 (91.82%)
-- **Top3≥2**: 476/929 (51.24%)
+- **Top3≥2**: 474/929 (51.02%)
 - **Top3=3**: 68/929 (7.32%)
 - **Top5≥3**: 731/929 (78.69%)
-- **Top5=5**: 36/929 (3.88%)
+- **Top5=5**: 34/929 (3.66%)
 
 **Verification**: Top3≥1 and Top5≥1 match existing backtest_summary.csv ✅
 
 ## Daily Examples (First 5 days)
 
-- **20250101**: 33 races; Top3≥1 30 (90.91%); Top3≥2 19 (57.58%); Top3=3 2 (6.06%)
+- **20250101**: 33 races; Top3≥1 30 (90.91%); Top3≥2 17 (51.52%); Top3=3 2 (6.06%)
 - **20250102**: 36 races; Top3≥1 34 (94.44%); Top3≥2 23 (63.89%); Top3=3 0 (0.00%)
 - **20250103**: 36 races; Top3≥1 33 (91.67%); Top3≥2 17 (47.22%); Top3=3 2 (5.56%)
 - **20250104**: 48 races; Top3≥1 46 (95.83%); Top3≥2 22 (45.83%); Top3=3 3 (6.25%)
