@@ -90,7 +90,7 @@ def calculate_deviation_score(skills: List[float]) -> List[float]:
 
 def get_race_recommendation(top_deviation: float) -> tuple:
     """
-    1位馬の偏差値からレース全体の推奨度を取得
+    1位馬の偏差値からレース全体の推奨度を取得（★5段階評価）
     
     Args:
         top_deviation: 1位馬の偏差値
@@ -99,17 +99,17 @@ def get_race_recommendation(top_deviation: float) -> tuple:
         (推奨度, 説明文) のタプル
     """
     if top_deviation >= 70:
-        return '◎◎◎', '本命が圧倒的で非常に予想しやすいレースです'
+        return '★★★★★', '本命が圧倒的で非常に予想しやすいレースです'
     elif top_deviation >= 65:
-        return '◎◎', '本命が明確で予想しやすいレースです'
+        return '★★★★☆', '本命が明確で予想しやすいレースです'
     elif top_deviation >= 60:
-        return '◎', '本命が有力で信頼できるレースです'
+        return '★★★☆☆', '本命が有力で信頼できるレースです'
     elif top_deviation >= 55:
-        return '○', '混戦模様ですが予想可能なレースです'
+        return '★★☆☆☆', '混戦模様ですが予想可能なレースです'
     elif top_deviation >= 50:
-        return '△', '大混戦で予想が難しいレースです'
+        return '★☆☆☆☆', '大混戦で予想が難しいレースです'
     else:
-        return '▲', '超混戦で要注意のレースです'
+        return '☆☆☆☆☆', '超混戦で要注意のレースです'
 
 # =====================================================================
 # 予測モデル（predict_daily_standalone.py と同じ）
