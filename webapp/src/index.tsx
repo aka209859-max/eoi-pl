@@ -179,4 +179,7 @@ app.get('/', (c) => {
   `)
 })
 
-export default app
+// Cloudflare Pages adapter
+export default {
+  fetch: app.fetch
+}
