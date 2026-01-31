@@ -1,23 +1,12 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { serveStatic } from 'hono/cloudflare-workers'
 
-// 型定義
-type Bindings = {
-  DB?: D1Database
-}
-
-type Env = {
-  Bindings: Bindings
-}
-
-const app = new Hono<Env>()
+const app = new Hono()
 
 // CORS設定
 app.use('/api/*', cors())
 
-// 静的ファイル配信
-app.use('/static/*', serveStatic({ root: './public' }))
+// 静的ファイル配信（Cloudflare Pagesは自動で /static を配信）
 
 // =====================================================================
 // API エンドポイント
@@ -179,7 +168,4 @@ app.get('/', (c) => {
   `)
 })
 
-// Cloudflare Pages adapter
-export default {
-  fetch: app.fetch
-}
+export default app
