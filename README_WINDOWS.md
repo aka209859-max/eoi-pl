@@ -9,19 +9,23 @@
 
 ### **1-1: パッケージのダウンロード**
 
-このチャットから以下のファイルをダウンロード:
+以下のURLからダウンロード:
 ```
-eoi-pl-local-package-FINAL.tar.gz
+https://www.genspark.ai/api/files/s/44XLAfBS
 ```
 
-ダウンロード先:
+**ブラウザで上記URLをクリック**すると、自動的にダウンロードが始まります。
+
+ダウンロード先（自動）:
 ```
-C:\Users\ihaji\Downloads\eoi-pl-local-package-FINAL.tar.gz
+C:\Users\あなたのユーザー名\Downloads\eoi-pl.tar.gz
 ```
 
 ---
 
-### **1-2: Eドライブに解凍**
+### **1-2: Eドライブの固定場所に解凍**
+
+**⚠️ 重要: 必ず E:\eoi-pl に保存してください**
 
 **PowerShellで実行**（管理者権限不要）:
 
@@ -32,30 +36,66 @@ E:
 # eoi-plディレクトリを作成
 New-Item -ItemType Directory -Force -Path E:\eoi-pl
 
-# 解凍
+# ダウンロードフォルダから解凍
 cd E:\eoi-pl
-tar -xzf C:\Users\ihaji\Downloads\eoi-pl-local-package-FINAL.tar.gz
+tar -xzf C:\Users\あなたのユーザー名\Downloads\eoi-pl.tar.gz
+
+# 解凍後、eoi-pl フォルダの中身を E:\eoi-pl に移動
+Move-Item -Path .\eoi-pl\* -Destination . -Force
+
+# 空のeoi-plフォルダを削除
+Remove-Item -Path .\eoi-pl -Force
+```
+
+**📁 最終的なディレクトリ構成**:
+```
+E:\eoi-pl\                          ← 固定場所
+├── data\
+│   └── feature_database_2020_2025.json
+├── scripts\
+│   ├── format_predictions_discord.py
+│   └── update_feature_database_monthly.py
+├── predictions\                    ← 自動作成
+├── backtest\
+├── README_WINDOWS.md
+├── OPERATION_GUIDE_完全版.md
+└── FINAL_SPEC_堅実派AI.md
 ```
 
 ---
 
 ### **1-3: ファイル構成確認**
 
+**⚠️ 重要: 全てのファイルが E:\eoi-pl 直下にあることを確認**
+
 ```
-E:\eoi-pl\
+E:\eoi-pl\                          ← 固定場所（必須）
 ├── data\
 │   └── feature_database_2020_2025.json  # 特徴量データベース（27MB）
 ├── scripts\
 │   ├── format_predictions_discord.py    # Discord出力スクリプト
-│   ├── predict_daily_standalone.py      # 日次予想スクリプト（未使用）
 │   └── update_feature_database_monthly.py # 月次更新スクリプト
+├── predictions\                    ← 自動作成（予想結果の保存先）
+│   ├── predictions_20260201.txt
+│   ├── predictions_20260202.txt
+│   └── ...
+├── backtest\                       ← バックテスト結果
+├── README_WINDOWS.md
 ├── OPERATION_GUIDE_完全版.md
-├── FINAL_SPEC_堅実派AI.md
-├── LOCAL_SETUP_GUIDE.md
-└── DISCORD_OUTPUT_GUIDE.md
+└── FINAL_SPEC_堅実派AI.md
 ```
 
-**重要**: `predictions\` フォルダは自動作成されます
+**確認コマンド**（PowerShellで実行）:
+```powershell
+# E:\eoi-pl に移動
+E:
+cd E:\eoi-pl
+
+# ファイル一覧を表示
+Get-ChildItem -Recurse -Depth 1
+```
+
+**重要**: `predictions\` フォルダは初回実行時に自動作成されます
 
 ---
 
@@ -150,8 +190,8 @@ notepad E:\eoi-pl\predictions\predictions_20260201.txt
 ```
 
 🎯 **推奨買い目**
-  Top3: 2, 10, 8
-  Top5: 2, 10, 8, 3, 6
+  Top3（馬連BOXなど）: 2, 10, 8
+  Top5（三連複BOXなど）: 2, 10, 8, 3, 6
 
 💡 **レース分析**
   本命が明確で予想しやすいレースです（推奨度: ★★★★☆）
@@ -229,16 +269,17 @@ C:\Users\ihaji\Downloads\feature_database_2020_202602.json
 
 ```powershell
 # 古いファイルをバックアップ
+New-Item -ItemType Directory -Force -Path "E:\eoi-pl\data\backup"
 Copy-Item "E:\eoi-pl\data\feature_database_2020_2025.json" "E:\eoi-pl\data\backup\feature_database_2020_2025_old.json"
 
-# バックアップフォルダがない場合は作成
-New-Item -ItemType Directory -Force -Path "E:\eoi-pl\data\backup"
-
 # 新しいファイルをコピー（最新版にリネーム）
-Copy-Item "C:\Users\ihaji\Downloads\feature_database_2020_202602.json" "E:\eoi-pl\data\feature_database_2020_2025.json"
+Copy-Item "C:\Users\あなたのユーザー名\Downloads\feature_database_2020_202602.json" "E:\eoi-pl\data\feature_database_2020_2025.json"
 ```
 
-**注意**: ファイル名は `feature_database_2020_2025.json` のまま（スクリプトがこの名前を参照）
+**⚠️ 重要**: 
+- ファイル名は常に `feature_database_2020_2025.json` のまま
+- スクリプトがこの名前を参照するため変更不可
+- 保存場所は必ず `E:\eoi-pl\data\`
 
 ---
 
@@ -424,23 +465,29 @@ A: Python公式サイト（https://www.python.org/downloads/）からダウン�
 **PowerShellで一括実行**:
 
 ```powershell
+# ⚠️ 重要: 必ず E:\eoi-pl に保存してください
+
 # 1. Eドライブに移動
 E:
 
 # 2. eoi-plディレクトリを作成
 New-Item -ItemType Directory -Force -Path E:\eoi-pl
 
-# 3. 解凍
+# 3. ダウンロードフォルダから解凍
 cd E:\eoi-pl
-tar -xzf C:\Users\ihaji\Downloads\eoi-pl-local-package-FINAL.tar.gz
+tar -xzf C:\Users\あなたのユーザー名\Downloads\eoi-pl.tar.gz
 
-# 4. Pythonライブラリをインストール
+# 4. 解凍後、eoi-pl フォルダの中身を E:\eoi-pl に移動
+Move-Item -Path .\eoi-pl\* -Destination . -Force
+Remove-Item -Path .\eoi-pl -Force
+
+# 5. Pythonライブラリをインストール
 pip install psycopg2-binary numpy pandas
 
-# 5. PostgreSQL起動確認
+# 6. PostgreSQL起動確認
 psql -U postgres -d eoi_pl -c "SELECT COUNT(*) FROM races WHERE kaisai_nen = 2026;"
 
-# 6. テスト実行（2026年1月2日の川崎1R）
+# 7. テスト実行（2026年1月2日の川崎1R）
 cd E:\eoi-pl\scripts
 python format_predictions_discord.py --race-id 202601024501
 ```
@@ -448,7 +495,26 @@ python format_predictions_discord.py --race-id 202601024501
 **期待される出力**:
 ```
 【川崎 1R】  レース推奨度: ★★★★☆ (1位偏差値: 69.0)
+
+🎯 推奨買い目
+  Top3（馬連BOXなど）: 2, 10, 8
+  Top5（三連複BOXなど）: 2, 10, 8, 3, 6
 ...
+```
+
+**📁 最終的なディレクトリ構成（必須）**:
+```
+E:\eoi-pl\                          ← 固定場所
+├── data\
+│   └── feature_database_2020_2025.json
+├── scripts\
+│   ├── format_predictions_discord.py
+│   └── update_feature_database_monthly.py
+├── predictions\                    ← 自動作成
+├── backtest\
+├── README_WINDOWS.md
+├── OPERATION_GUIDE_完全版.md
+└── FINAL_SPEC_堅実派AI.md
 ```
 
 ---
