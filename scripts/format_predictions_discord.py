@@ -319,8 +319,11 @@ def format_race_discord(predictions: List[Dict], race_id: str) -> str:
     return output
 
 def save_to_txt(content: str, output_path: str):
-    """TXTファイルに保存"""
-    with open(output_path, 'w', encoding='utf-8') as f:
+    """TXTファイルに保存（親ディレクトリを自動作成）"""
+    output_file = Path(output_path)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_file, 'w', encoding='utf-8') as f:
         f.write(content)
     print(f"💾 保存完了: {output_path}")
 
@@ -411,7 +414,7 @@ def main():
     parser.add_argument('--date', type=str, help='予想日（例: 20260201）')
     parser.add_argument('--output', type=str, help='出力TXTファイル名')
     parser.add_argument('--db', type=str, 
-                       default='E:/eoi-pl/data/feature_database_latest.json',
+                       default='E:/eoi-pl/data/feature_database_2020_2025.json',
                        help='特徴量データベースのパス')
     
     args = parser.parse_args()

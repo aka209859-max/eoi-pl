@@ -379,9 +379,19 @@ def generate_summary(results: List[Dict]) -> Dict:
 
 def main():
     """メイン処理"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='EOI-PL v1.0-Prime バックテスト')
+    parser.add_argument('--start-date', type=int, default=102, help='開始日 (例: 102)')
+    parser.add_argument('--end-date', type=int, default=130, help='終了日 (例: 130)')
+    parser.add_argument('--year', type=int, default=2026, help='年 (例: 2025)')
+    parser.add_argument('--output', type=str, default='backtest_2026_01_full', help='出力ファイル名（拡張子なし）')
+    args = parser.parse_args()
+    
     print("=" * 60)
     print("🚀 EOI-PL v1.0-Prime 完全版バックテスト")
     print("=" * 60)
+    print(f"対象期間: {args.year}-{args.start_date:04d} ~ {args.year}-{args.end_date:04d}")
     
     # 特徴量データベースをロード
     print("\n📂 特徴量データベースをロード中...")
@@ -392,8 +402,67 @@ def main():
     # モデル作成
     model = FullFeatureModel(feature_db)
     
-    # バックテスト実行
-    results = model.run_backtest(102, 130)
+    # バックテスト実行（年を変更）
+    model.conn = psycopg2.connect(**DB_CONFIG)
+    model.cur = model.conn.cursor()
+    
+    # 年を指定してバックテスト実行
+    results = []
+    model.cur.execute("""
+        SELECT 
+            r.race_id,
+            r.kaisai_nen,
+            r.kaisai_tsukihi,
+            r.keibajo_code,
+            r.race_bango
+        FROM races r
+        WHERE r.kaisai_nen = %s
+          AND r.kaisai_tsukihi BETWEEN %s AND %s
+          AND r.keibajo_code = ANY(%s)
+        ORDER BY r.kaisai_tsukihi, r.keibajo_code, r.race_bango
+    """, (args.year, args.start_date, args.end_date, NAR_VENUES))
+    
+    races = model.cur.fetchall()
+    print(f"\n🔍 バックテスト実行中...")
+    
+    for race_id, kaisai_nen, kaisai_tsukihi, keibajo_code, race_bango in races:
+        predictions = model.predict_race(race_id)
+        
+        if not predictions:
+            continue
+        
+        # Top3予測
+        top3_predicted = [p['umaban'] for p in predictions[:3]]
+        top3_actual = sorted(
+            [p for p in predictions if p['kakutei_chakujun'] and p['kakutei_chakujun'] <= 3],
+            key=lambda x: x['kakutei_chakujun']
+        )
+        top3_actual_umaban = [p['umaban'] for p in top3_actual]
+        
+        # Top5予測
+        top5_predicted = [p['umaban'] for p in predictions[:5]]
+        
+        # 的中判定
+        # Top3予測の的中: Top3予想のうち何頭が実際のTop3に入ったか
+        top3_hit_count = len(set(top3_predicted) & set(top3_actual_umaban))
+        # Top5≥3の的中: Top5予想のうち何頭が実際のTop3に入ったか（CEOの定義）
+        top5_hit_count = len(set(top5_predicted) & set(top3_actual_umaban))
+        
+        results.append({
+            'kaisai_nen': kaisai_nen,
+            'kaisai_tsukihi': kaisai_tsukihi,
+            'keibajo_code': keibajo_code,
+            'race_bango': race_bango,
+            'race_id': race_id,
+            'top3_predicted': top3_predicted,
+            'top3_actual': top3_actual_umaban,
+            'top3_hit_count': top3_hit_count,
+            'top5_predicted': top5_predicted,
+            'top5_actual': top3_actual_umaban,  # Top5≥3はTop3実際と比較
+            'top5_hit_count': top5_hit_count
+        })
+    
+    print(f"   ✅ {len(results)}レースの予測完了")
     
     # サマリー生成
     print("\n📊 サマリー生成中...")
@@ -413,7 +482,7 @@ def main():
     print(f"  Top5=5: {summary['top5_eq5']}/{summary['total_races']} ({summary['top5_eq5_rate']:.2%})")
     
     # CSV保存
-    detail_csv = BACKTEST_DIR / "backtest_2026_01_full_detail.csv"
+    detail_csv = BACKTEST_DIR / f"{args.output}_detail.csv"
     detail_df = pd.DataFrame([{
         'kaisai_tsukihi': r['kaisai_tsukihi'],
         'keibajo_code': r['keibajo_code'],
@@ -429,10 +498,14 @@ def main():
     print(f"\n✅ 詳細CSV保存: {detail_csv}")
     
     # JSON保存
-    summary_json = BACKTEST_DIR / "backtest_2026_01_full_summary.json"
+    summary_json = BACKTEST_DIR / f"{args.output}_summary.json"
     with open(summary_json, 'w', encoding='utf-8') as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
     print(f"✅ サマリーJSON保存: {summary_json}")
+    
+    model.close()
+    
+    print("\n🎉 完全版バックテスト完了！")
     
     model.close()
     
