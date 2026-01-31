@@ -1,0 +1,37 @@
+============================================================
+CEO向け: 馬名マッピング CSV 再エクスポート手順
+============================================================
+
+問題: 前回の bamei_mapping.csv が文字化け（Shift_JIS問題）
+
+解決策: psql で UTF-8 エンコーディングを強制してエクスポート
+
+実行手順（Windows CMD）:
+
+1) PostgreSQL に接続:
+
+cd "C:\Program Files\PostgreSQL\17\bin"
+psql.exe -h 127.0.0.1 -p 5432 -U postgres -d pckeiba
+
+2) psql プロンプト (pckeiba=#) で以下を実行:
+
+-- UTF-8 エンコーディングに設定
+SET client_encoding = 'UTF8';
+
+-- UTF-8 で CSV エクスポート
+\copy (SELECT ketto_toroku_bango, bamei FROM nvd_se WHERE kaisai_nen = '2026' GROUP BY ketto_toroku_bango, bamei) TO 'C:\Users\ihaji\bamei_mapping_utf8.csv' WITH CSV HEADER ENCODING 'UTF8';
+
+-- 終了
+\q
+
+3) ファイル確認:
+
+type C:\Users\ihaji\bamei_mapping_utf8.csv | more
+
+4) このチャットにアップロード:
+
+C:\Users\ihaji\bamei_mapping_utf8.csv
+
+============================================================
+期待される結果: 馬名が正常に表示される CSV
+============================================================

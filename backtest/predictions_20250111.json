@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated_at": "2026-01-22T14:03:18.228585+09:00",
+    "generated_at": "2026-01-29T00:26:32.193936+09:00",
     "model_version": "v1.0-PL-PowerEP",
     "target_date": "20250111",
     "freeze": true,
     "odds_used": false,
     "model_family": "pl_powerep",
     "alpha": 0.5,
-    "training_unique_horses": 15182,
+    "training_unique_horses": 34892,
     "data_hash": "bb812a6dcf98c9fe",
     "code_hash": "git:c800885",
     "model_hash": "5e11900da96ed70b"
@@ -18,37 +18,37 @@
       "horses": [
         {
           "umaban": 9,
-          "bamei": "レイズショコラ　　　　　　　　　　　",
-          "P_win": 0.197798,
-          "P_place": 0.593393,
+          "bamei": "???C?Y?V???R???@?@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.194795,
+          "P_place": 0.584386,
           "rank_pred": 1
         },
         {
           "umaban": 6,
           "bamei": "ベートーヴェン　　　　　　　　　　　",
-          "P_win": 0.176605,
-          "P_place": 0.529815,
+          "P_win": 0.170446,
+          "P_place": 0.511338,
           "rank_pred": 2
+        },
+        {
+          "umaban": 1,
+          "bamei": "ビップジャスミン　　　　　　　　　　",
+          "P_win": 0.107741,
+          "P_place": 0.323223,
+          "rank_pred": 3
         },
         {
           "umaban": 5,
           "bamei": "タイムオブクリア　　　　　　　　　　",
-          "P_win": 0.103608,
-          "P_place": 0.310825,
-          "rank_pred": 3
-        },
-        {
-          "umaban": 2,
-          "bamei": "ユリシーズ　　　　　　　　　　　　　",
-          "P_win": 0.100917,
-          "P_place": 0.302752,
+          "P_win": 0.100644,
+          "P_place": 0.301933,
           "rank_pred": 4
         },
         {
           "umaban": 7,
-          "bamei": "サンマルウォーリア　　　　　　　　　",
-          "P_win": 0.098899,
-          "P_place": 0.296697,
+          "bamei": "?T???}???E?H?[???A?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.097398,
+          "P_place": 0.292193,
           "rank_pred": 5
         }
       ]
@@ -57,38 +57,38 @@
       "race_id": "2025_0111_55_02",
       "horses": [
         {
-          "umaban": 10,
-          "bamei": "サウンドイヴォーク　　　　　　　　　",
-          "P_win": 0.178597,
-          "P_place": 0.535791,
+          "umaban": 4,
+          "bamei": "?t?F?A???[?p?C???@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.168671,
+          "P_place": 0.506013,
           "rank_pred": 1
         },
         {
-          "umaban": 4,
-          "bamei": "フェアリーパイン　　　　　　　　　　",
-          "P_win": 0.162959,
-          "P_place": 0.488878,
+          "umaban": 10,
+          "bamei": "?T?E???h?C???H?[?N?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.168671,
+          "P_place": 0.506013,
           "rank_pred": 2
         },
         {
-          "umaban": 2,
-          "bamei": "シャインデザイン　　　　　　　　　　",
-          "P_win": 0.10982,
-          "P_place": 0.329461,
+          "umaban": 3,
+          "bamei": "ペイシャキネマ　　　　　　　　　　　",
+          "P_win": 0.100686,
+          "P_place": 0.302059,
           "rank_pred": 3
         },
         {
           "umaban": 8,
           "bamei": "シャイナライ　　　　　　　　　　　　",
-          "P_win": 0.101462,
-          "P_place": 0.304386,
+          "P_win": 0.097214,
+          "P_place": 0.291643,
           "rank_pred": 4
         },
         {
-          "umaban": 3,
-          "bamei": "ペイシャキネマ　　　　　　　　　　　",
-          "P_win": 0.097149,
-          "P_place": 0.291447,
+          "umaban": 2,
+          "bamei": "シャインデザイン　　　　　　　　　　",
+          "P_win": 0.093685,
+          "P_place": 0.281054,
           "rank_pred": 5
         }
       ]
@@ -99,36 +99,36 @@
         {
           "umaban": 7,
           "bamei": "ヨシオドライヴ　　　　　　　　　　　",
-          "P_win": 0.256354,
-          "P_place": 0.769061,
+          "P_win": 0.23172,
+          "P_place": 0.695161,
           "rank_pred": 1
-        },
-        {
-          "umaban": 8,
-          "bamei": "プリンシパルアクト　　　　　　　　　",
-          "P_win": 0.129734,
-          "P_place": 0.389201,
-          "rank_pred": 2
-        },
-        {
-          "umaban": 6,
-          "bamei": "ピエナナイスガイ　　　　　　　　　　",
-          "P_win": 0.120241,
-          "P_place": 0.360723,
-          "rank_pred": 3
-        },
-        {
-          "umaban": 5,
-          "bamei": "ケンタッキーグレイ　　　　　　　　　",
-          "P_win": 0.111509,
-          "P_place": 0.334527,
-          "rank_pred": 4
         },
         {
           "umaban": 9,
           "bamei": "シゲルチータ　　　　　　　　　　　　",
-          "P_win": 0.093498,
-          "P_place": 0.280493,
+          "P_win": 0.131063,
+          "P_place": 0.39319,
+          "rank_pred": 2
+        },
+        {
+          "umaban": 6,
+          "bamei": "?s?G?i?i?C?X?K?C?@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.117643,
+          "P_place": 0.352928,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 8,
+          "bamei": "?v?????V?p???A?N?g?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.103527,
+          "P_place": 0.310581,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 5,
+          "bamei": "?P???^?b?L?[?O???C?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.099382,
+          "P_place": 0.298146,
           "rank_pred": 5
         }
       ]
@@ -138,7 +138,7 @@
       "horses": [
         {
           "umaban": 10,
-          "bamei": "エムティピース　　　　　　　　　　　",
+          "bamei": "?G???e?B?s?[?X?@?@?@?@?@?@?@?@?@?@?@",
           "P_win": 0.147722,
           "P_place": 0.443167,
           "rank_pred": 1
@@ -152,7 +152,7 @@
         },
         {
           "umaban": 2,
-          "bamei": "スーパーフルール　　　　　　　　　　",
+          "bamei": "?X?[?p?[?t???[???@?@?@?@?@?@?@?@?@?@",
           "P_win": 0.116068,
           "P_place": 0.348203,
           "rank_pred": 3
@@ -166,7 +166,7 @@
         },
         {
           "umaban": 8,
-          "bamei": "マナラナキラ　　　　　　　　　　　　",
+          "bamei": "?}?i???i?L???@?@?@?@?@?@?@?@?@?@?@?@",
           "P_win": 0.102571,
           "P_place": 0.307714,
           "rank_pred": 5
@@ -179,36 +179,36 @@
         {
           "umaban": 1,
           "bamei": "エスシーアルベル　　　　　　　　　　",
-          "P_win": 0.174788,
-          "P_place": 0.524363,
+          "P_win": 0.164147,
+          "P_place": 0.492441,
           "rank_pred": 1
         },
         {
           "umaban": 9,
           "bamei": "メーオーテソーロ　　　　　　　　　　",
-          "P_win": 0.116525,
-          "P_place": 0.349575,
+          "P_win": 0.109431,
+          "P_place": 0.328294,
           "rank_pred": 2
         },
         {
-          "umaban": 2,
-          "bamei": "サンマルマインド　　　　　　　　　　",
-          "P_win": 0.10149,
-          "P_place": 0.304469,
+          "umaban": 3,
+          "bamei": "?x???W?I?}?i?~?@?@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.084419,
+          "P_place": 0.253256,
           "rank_pred": 3
-        },
-        {
-          "umaban": 12,
-          "bamei": "モスコビウム　　　　　　　　　　　　",
-          "P_win": 0.084746,
-          "P_place": 0.254237,
-          "rank_pred": 4
         },
         {
           "umaban": 11,
           "bamei": "ストライクリッチ　　　　　　　　　　",
-          "P_win": 0.075995,
-          "P_place": 0.227984,
+          "P_win": 0.083749,
+          "P_place": 0.251246,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 2,
+          "bamei": "サンマルマインド　　　　　　　　　　",
+          "P_win": 0.079729,
+          "P_place": 0.239186,
           "rank_pred": 5
         }
       ]
@@ -219,36 +219,36 @@
         {
           "umaban": 3,
           "bamei": "クリノカグヤ　　　　　　　　　　　　",
-          "P_win": 0.112527,
-          "P_place": 0.337582,
+          "P_win": 0.104483,
+          "P_place": 0.313448,
           "rank_pred": 1
         },
         {
-          "umaban": 5,
-          "bamei": "メイショウチェリー　　　　　　　　　",
-          "P_win": 0.10325,
-          "P_place": 0.309749,
+          "umaban": 6,
+          "bamei": "ラブヒカリ　　　　　　　　　　　　　",
+          "P_win": 0.10187,
+          "P_place": 0.305611,
           "rank_pred": 2
-        },
-        {
-          "umaban": 2,
-          "bamei": "グシチャンノホシ　　　　　　　　　　",
-          "P_win": 0.093066,
-          "P_place": 0.279199,
-          "rank_pred": 3
         },
         {
           "umaban": 12,
           "bamei": "バトーボヌール　　　　　　　　　　　",
-          "P_win": 0.091289,
-          "P_place": 0.273867,
+          "P_win": 0.087322,
+          "P_place": 0.261966,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 9,
+          "bamei": "マオノシャウト　　　　　　　　　　　",
+          "P_win": 0.087209,
+          "P_place": 0.261628,
           "rank_pred": 4
         },
         {
-          "umaban": 7,
-          "bamei": "ジャスティスボス　　　　　　　　　　",
-          "P_win": 0.09001,
-          "P_place": 0.270031,
+          "umaban": 2,
+          "bamei": "?O?V?`?????m?z?V?@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.086413,
+          "P_place": 0.259238,
           "rank_pred": 5
         }
       ]
@@ -258,37 +258,37 @@
       "horses": [
         {
           "umaban": 4,
-          "bamei": "キングオリヴァー　　　　　　　　　　",
-          "P_win": 0.311054,
-          "P_place": 0.933161,
+          "bamei": "?L???O?I?????@?[?@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.303404,
+          "P_place": 0.910211,
           "rank_pred": 1
-        },
-        {
-          "umaban": 2,
-          "bamei": "メイショウスイケイ　　　　　　　　　",
-          "P_win": 0.084167,
-          "P_place": 0.252502,
-          "rank_pred": 2
         },
         {
           "umaban": 5,
           "bamei": "メイショウニタボウ　　　　　　　　　",
-          "P_win": 0.082948,
-          "P_place": 0.248843,
-          "rank_pred": 3
+          "P_win": 0.095812,
+          "P_place": 0.287435,
+          "rank_pred": 2
         },
         {
           "umaban": 10,
           "bamei": "ペルドリ　　　　　　　　　　　　　　",
-          "P_win": 0.079081,
-          "P_place": 0.237244,
+          "P_win": 0.077137,
+          "P_place": 0.23141,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 2,
+          "bamei": "メイショウスイケイ　　　　　　　　　",
+          "P_win": 0.07111,
+          "P_place": 0.213331,
           "rank_pred": 4
         },
         {
-          "umaban": 3,
-          "bamei": "フォートレスヒル　　　　　　　　　　",
-          "P_win": 0.06404,
-          "P_place": 0.192121,
+          "umaban": 11,
+          "bamei": "クリノキューチャン　　　　　　　　　",
+          "P_win": 0.068437,
+          "P_place": 0.205311,
           "rank_pred": 5
         }
       ]
@@ -297,38 +297,38 @@
       "race_id": "2025_0111_55_08",
       "horses": [
         {
-          "umaban": 4,
-          "bamei": "エナジーボーイ　　　　　　　　　　　",
-          "P_win": 0.251694,
-          "P_place": 0.755082,
+          "umaban": 8,
+          "bamei": "?J?V?m?J???s?I?[?l?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.303553,
+          "P_place": 0.910658,
           "rank_pred": 1
         },
         {
-          "umaban": 8,
-          "bamei": "カシノカンピオーネ　　　　　　　　　",
-          "P_win": 0.251694,
-          "P_place": 0.755082,
+          "umaban": 4,
+          "bamei": "エナジーボーイ　　　　　　　　　　　",
+          "P_win": 0.092386,
+          "P_place": 0.277157,
           "rank_pred": 2
         },
         {
           "umaban": 2,
           "bamei": "カゼノオト　　　　　　　　　　　　　",
-          "P_win": 0.074973,
-          "P_place": 0.224918,
+          "P_win": 0.083587,
+          "P_place": 0.250761,
           "rank_pred": 3
         },
         {
-          "umaban": 11,
-          "bamei": "フウゲツムヘン　　　　　　　　　　　",
-          "P_win": 0.061639,
-          "P_place": 0.184918,
+          "umaban": 6,
+          "bamei": "?|?b?s???x???[?@?@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.074644,
+          "P_place": 0.223932,
           "rank_pred": 4
         },
         {
-          "umaban": 6,
-          "bamei": "ポッピンベリー　　　　　　　　　　　",
-          "P_win": 0.058429,
-          "P_place": 0.175287,
+          "umaban": 5,
+          "bamei": "ジューンナックル　　　　　　　　　　",
+          "P_win": 0.069101,
+          "P_place": 0.207304,
           "rank_pred": 5
         }
       ]
@@ -338,37 +338,37 @@
       "horses": [
         {
           "umaban": 11,
-          "bamei": "ミルミル　　　　　　　　　　　　　　",
-          "P_win": 0.160788,
-          "P_place": 0.482363,
+          "bamei": "?~???~???@?@?@?@?@?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.151938,
+          "P_place": 0.455814,
           "rank_pred": 1
         },
         {
           "umaban": 9,
           "bamei": "ツウカイアペックス　　　　　　　　　",
-          "P_win": 0.092255,
-          "P_place": 0.276766,
+          "P_win": 0.097494,
+          "P_place": 0.292481,
           "rank_pred": 2
         },
         {
-          "umaban": 3,
-          "bamei": "スパーキングブルー　　　　　　　　　",
-          "P_win": 0.087161,
-          "P_place": 0.261483,
+          "umaban": 10,
+          "bamei": "バイコーン　　　　　　　　　　　　　",
+          "P_win": 0.093844,
+          "P_place": 0.281532,
           "rank_pred": 3
         },
         {
-          "umaban": 6,
-          "bamei": "ホウオウプラージュ　　　　　　　　　",
-          "P_win": 0.085039,
-          "P_place": 0.255116,
+          "umaban": 3,
+          "bamei": "?X?p?[?L???O?u???[?@?@?@?@?@?@?@?@?@",
+          "P_win": 0.082808,
+          "P_place": 0.248424,
           "rank_pred": 4
         },
         {
-          "umaban": 2,
-          "bamei": "トーテムポール　　　　　　　　　　　",
-          "P_win": 0.079898,
-          "P_place": 0.239693,
+          "umaban": 4,
+          "bamei": "ヌーシャテル　　　　　　　　　　　　",
+          "P_win": 0.079034,
+          "P_place": 0.237101,
           "rank_pred": 5
         }
       ]
@@ -377,38 +377,38 @@
       "race_id": "2025_0111_55_10",
       "horses": [
         {
-          "umaban": 6,
-          "bamei": "ヴォルゴグラード　　　　　　　　　　",
-          "P_win": 0.264015,
-          "P_place": 0.792046,
+          "umaban": 5,
+          "bamei": "シルトプレ　　　　　　　　　　　　　",
+          "P_win": 0.269414,
+          "P_place": 0.808243,
           "rank_pred": 1
         },
         {
-          "umaban": 5,
-          "bamei": "シルトプレ　　　　　　　　　　　　　",
-          "P_win": 0.227346,
-          "P_place": 0.682039,
+          "umaban": 6,
+          "bamei": "ヴォルゴグラード　　　　　　　　　　",
+          "P_win": 0.22374,
+          "P_place": 0.671219,
           "rank_pred": 2
-        },
-        {
-          "umaban": 2,
-          "bamei": "クロスザルビコン　　　　　　　　　　",
-          "P_win": 0.132008,
-          "P_place": 0.396023,
-          "rank_pred": 3
-        },
-        {
-          "umaban": 4,
-          "bamei": "サトノスライヴ　　　　　　　　　　　",
-          "P_win": 0.131161,
-          "P_place": 0.393484,
-          "rank_pred": 4
         },
         {
           "umaban": 1,
           "bamei": "エイシンダンシャク　　　　　　　　　",
-          "P_win": 0.125813,
-          "P_place": 0.377439,
+          "P_win": 0.141307,
+          "P_place": 0.42392,
+          "rank_pred": 3
+        },
+        {
+          "umaban": 2,
+          "bamei": "クロスザルビコン　　　　　　　　　　",
+          "P_win": 0.123251,
+          "P_place": 0.369753,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 4,
+          "bamei": "サトノスライヴ　　　　　　　　　　　",
+          "P_win": 0.122461,
+          "P_place": 0.367383,
           "rank_pred": 5
         }
       ]
@@ -419,36 +419,36 @@
         {
           "umaban": 12,
           "bamei": "ブッシュテソーロ　　　　　　　　　　",
-          "P_win": 0.1936,
-          "P_place": 0.5808,
+          "P_win": 0.195459,
+          "P_place": 0.586377,
           "rank_pred": 1
-        },
-        {
-          "umaban": 8,
-          "bamei": "グリーンオーブ　　　　　　　　　　　",
-          "P_win": 0.094825,
-          "P_place": 0.284474,
-          "rank_pred": 2
         },
         {
           "umaban": 7,
           "bamei": "カイマナエレエレ　　　　　　　　　　",
-          "P_win": 0.094439,
-          "P_place": 0.283317,
-          "rank_pred": 3
+          "P_win": 0.095346,
+          "P_place": 0.286037,
+          "rank_pred": 2
         },
         {
           "umaban": 2,
           "bamei": "マティルデ　　　　　　　　　　　　　",
-          "P_win": 0.092591,
-          "P_place": 0.277774,
-          "rank_pred": 4
+          "P_win": 0.091621,
+          "P_place": 0.274864,
+          "rank_pred": 3
         },
         {
           "umaban": 1,
           "bamei": "クーペ　　　　　　　　　　　　　　　",
-          "P_win": 0.088503,
-          "P_place": 0.265509,
+          "P_win": 0.081311,
+          "P_place": 0.243933,
+          "rank_pred": 4
+        },
+        {
+          "umaban": 9,
+          "bamei": "モリエヌス　　　　　　　　　　　　　",
+          "P_win": 0.078184,
+          "P_place": 0.234551,
           "rank_pred": 5
         }
       ]

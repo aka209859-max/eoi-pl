@@ -1,6 +1,6 @@
 # Auditable Backtest Report v2 - EOI-PL v1.0-Prime
 
-**Generated**: 2026-01-27 13:11:02 JST
+**Generated**: 2026-01-28 15:27:21 JST
 
 ## Overview
 

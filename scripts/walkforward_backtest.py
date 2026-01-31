@@ -65,12 +65,12 @@ class WalkForwardBacktest:
         # 学習データロード（複数年）
         self.cur.execute("""
             SELECT 
-                r.race_id,
+                e.race_id,
                 e.ketto_toroku_bango,
                 e.kakutei_chakujun
             FROM entries e
-            INNER JOIN races r ON e.race_id = r.race_id
-            WHERE r.kaisai_nen >= %s AND r.kaisai_nen <= %s
+            WHERE SUBSTRING(e.race_id, 1, 4)::int >= %s 
+                AND SUBSTRING(e.race_id, 1, 4)::int <= %s
                 AND e.kakutei_chakujun IS NOT NULL
                 AND e.kakutei_chakujun > 0
                 AND e.ketto_toroku_bango IS NOT NULL
