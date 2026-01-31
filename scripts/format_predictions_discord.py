@@ -309,8 +309,8 @@ def format_race_discord(predictions: List[Dict], race_id: str) -> str:
     top5 = [str(p['umaban']) for p in predictions[:5]]
     
     output += f"\n🎯 **推奨買い目**\n"
-    output += f"  Top3: {', '.join(top3)}\n"
-    output += f"  Top5: {', '.join(top5)}\n"
+    output += f"  Top3（馬連BOXなど）: {', '.join(top3)}\n"
+    output += f"  Top5（三連複BOXなど）: {', '.join(top5)}\n"
     
     # レース分析コメント
     output += f"\n💡 **レース分析**\n"
