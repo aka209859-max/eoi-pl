@@ -289,11 +289,11 @@ def main():
     # 特徴量エンジニア作成
     engineer = FeatureEngineer()
     
-    # 2020-2024年のデータで特徴量を計算
-    feature_db = engineer.build_feature_database((2020, 2024))
+    # 2020-2025年のデータで特徴量を計算（CEOの指示）
+    feature_db = engineer.build_feature_database((2020, 2025))
     
     # 保存
-    output_path = "/home/user/eoi-pl/data/feature_database_2020_2024.json"
+    output_path = "/home/user/eoi-pl/data/feature_database_2020_2025.json"
     engineer.save_feature_database(feature_db, output_path)
     
     # クローズ

@@ -30,15 +30,15 @@ DB_CONFIG = {
 # 地方競馬場コード
 NAR_VENUES = [30, 35, 36, 42, 43, 44, 45, 46, 47, 48, 50, 51, 54, 55]
 
-# 特徴量の重み（初期値）
+# 特徴量の重み（正規化済み: 合計=1.00）
 WEIGHTS = {
-    'avg_rank': 0.30,
-    'jockey': 0.15,
-    'trainer': 0.10,
-    'corner': 0.15,
-    'time': 0.15,
-    'distance': 0.10,
-    'track': 0.05
+    'avg_rank': 0.30,    # 平均順位
+    'jockey': 0.15,      # 騎手
+    'trainer': 0.10,     # 調教師
+    'corner': 0.15,      # コーナー
+    'time': 0.15,        # タイム（距離別基準使用）
+    'distance': 0.10,    # 距離
+    'track': 0.05        # 馬場
 }
 
 BACKTEST_DIR = Path("/home/user/eoi-pl/backtest")
@@ -102,6 +102,67 @@ class FullFeatureModel:
             if avg_corner is not None:
                 return -np.log(max(avg_corner, 1.0))
         return 0.0
+    
+    def calculate_time_skill(self, ketto: str, kyori: int) -> float:
+        """タイムスキル計算（距離別基準タイム使用、0.1秒単位）"""
+        if ketto not in self.feature_db['horses']:
+            return 0.0
+        
+        horse_data = self.feature_db['horses'][ketto]
+        avg_time = horse_data.get('avg_time')
+        
+        if avg_time is None or kyori is None or kyori == 0:
+            return 0.0
+        
+        # 距離別基準タイム（1着馬の平均）と標準偏差
+        # 実際のデータから算出（2020-2025年、地方競馬、1着馬のみ）
+        # 単位: 0.1秒（データベース保存形式）
+        distance_benchmarks = {
+            800: (492.0, 13.9),
+            820: (510.6, 7.4),
+            850: (516.1, 8.9),
+            900: (553.1, 10.1),
+            920: (567.8, 10.0),
+            1000: (982.5, 119.3),
+            1100: (1087.1, 9.9),
+            1200: (1147.3, 14.1),
+            1230: (1206.8, 13.3),
+            1300: (1249.1, 15.8),
+            1400: (1313.8, 20.9),
+            1500: (1374.6, 15.5),
+            1600: (1436.7, 24.6),
+            1650: (1457.6, 14.9),
+            1700: (1515.7, 29.0),
+            1750: (1578.7, 74.0),
+            1800: (1655.5, 185.8),
+            1860: (2002.3, 117.5),
+            1870: (2055.7, 56.0),
+            1900: (2049.1, 42.1),
+            2000: (2120.0, 34.7),
+            2100: (2167.2, 25.9),
+            2200: (2279.0, 24.2),
+            2400: (2377.9, 55.9),
+            2500: (2475.4, 30.8),
+            2600: (2505.0, 21.3),
+        }
+        
+        # 最も近い距離の基準値を使う
+        if kyori in distance_benchmarks:
+            baseline, stddev = distance_benchmarks[kyori]
+        else:
+            # 最も近い距離を探す
+            closest_kyori = min(distance_benchmarks.keys(), key=lambda x: abs(x - kyori))
+            baseline, stddev = distance_benchmarks[closest_kyori]
+        
+        # 標準化スコア: (baseline - avg_time) / stddev
+        # avg_time も 0.1秒単位なので単位変換不要
+        # 速いほど高スキル（baselineより速いとプラス）
+        z_score = (baseline - avg_time) / stddev
+        
+        # スキルの範囲を制限（-2.0 ~ 2.0）
+        skill = max(min(z_score * 0.5, 2.0), -2.0)
+        
+        return skill
     
     def calculate_distance_adaptation(self, ketto: str, kyori: int) -> float:
         """距離適性計算"""
@@ -187,6 +248,7 @@ class FullFeatureModel:
             jockey_skill = self.calculate_jockey_skill(kishu)
             trainer_skill = self.calculate_trainer_skill(chokyoshi)
             corner_skill = self.calculate_corner_skill(ketto)
+            time_skill = self.calculate_time_skill(ketto, kyori) if kyori else 0.0
             distance_skill = self.calculate_distance_adaptation(ketto, kyori) if kyori else 0.0
             track_skill = self.calculate_track_adaptation(ketto, track_code) if track_code else 0.0
             
@@ -196,6 +258,7 @@ class FullFeatureModel:
                 WEIGHTS['jockey'] * jockey_skill +
                 WEIGHTS['trainer'] * trainer_skill +
                 WEIGHTS['corner'] * corner_skill +
+                WEIGHTS['time'] * time_skill +
                 WEIGHTS['distance'] * distance_skill +
                 WEIGHTS['track'] * track_skill
             )
@@ -322,7 +385,7 @@ def main():
     
     # 特徴量データベースをロード
     print("\n📂 特徴量データベースをロード中...")
-    with open("/home/user/eoi-pl/data/feature_database_2020_2024.json", 'r', encoding='utf-8') as f:
+    with open("/home/user/eoi-pl/data/feature_database_2020_2025.json", 'r', encoding='utf-8') as f:
         feature_db = json.load(f)
     print(f"   ✅ ロード完了")
     
