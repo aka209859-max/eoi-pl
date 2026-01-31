@@ -135,6 +135,16 @@ def import_races_csv():
     df = pd.read_csv(csv_path, encoding='utf-8')
     print(f"📊 レコード数: {len(df)}")
     
+    # race_id を生成
+    # race_id = kaisai_nen(4桁) + kaisai_tsukihi(4桁) + keibajo_code(2桁) + race_bango(2桁)
+    df['race_id'] = (
+        df['kaisai_nen'].astype(str) + 
+        df['kaisai_tsukihi'].astype(str).str.zfill(4) + 
+        df['keibajo_code'].astype(str).str.zfill(2) + 
+        df['race_bango'].astype(str).str.zfill(2)
+    )
+    print(f"✅ race_id を生成しました（例: {df['race_id'].iloc[0]}）")
+    
     # eoi_pl データベースに接続
     db_config = DB_CONFIG.copy()
     db_config['database'] = 'eoi_pl'
@@ -184,6 +194,30 @@ def import_entries_csv():
     # CSVを読み込み
     df = pd.read_csv(csv_path, encoding='utf-8')
     print(f"📊 レコード数: {len(df)}")
+    
+    # race_id を生成
+    df['race_id'] = (
+        df['kaisai_nen'].astype(str) + 
+        df['kaisai_tsukihi'].astype(str).str.zfill(4) + 
+        df['keibajo_code'].astype(str).str.zfill(2) + 
+        df['race_bango'].astype(str).str.zfill(2)
+    )
+    print(f"✅ race_id を生成しました")
+    
+    # corner_tsuuka_jun を生成（corner_1, corner_2, corner_3, corner_4 を結合）
+    # 例: corner_1=3, corner_2=4, corner_3=5, corner_4=6 → "3-4-5-6"
+    def combine_corners(row):
+        corners = []
+        for i in range(1, 5):
+            col = f'corner_{i}'
+            if col in row and pd.notna(row[col]):
+                corners.append(str(int(row[col])))
+        return '-'.join(corners) if corners else None
+    
+    df['corner_tsuuka_jun'] = df.apply(combine_corners, axis=1)
+    
+    # data_kubun を設定（確定着順がある場合は '7'）
+    df['data_kubun'] = df['kakutei_chakujun'].apply(lambda x: '7' if pd.notna(x) else None)
     
     # eoi_pl データベースに接続
     db_config = DB_CONFIG.copy()
