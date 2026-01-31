@@ -88,30 +88,28 @@ def calculate_deviation_score(skills: List[float]) -> List[float]:
     deviations = 50.0 + 10.0 * (skills_array - mean) / std
     return deviations.tolist()
 
-def get_recommendation_level(deviation: float) -> str:
+def get_race_recommendation(top_deviation: float) -> tuple:
     """
-    偏差値から推奨度を取得
+    1位馬の偏差値からレース全体の推奨度を取得
     
     Args:
-        deviation: 偏差値
+        top_deviation: 1位馬の偏差値
     
     Returns:
-        推奨度（◎◎◎, ◎◎, ◎, ○, △, ▲, ×）
+        (推奨度, 説明文) のタプル
     """
-    if deviation >= 65:
-        return '◎◎◎'
-    elif deviation >= 60:
-        return '◎◎'
-    elif deviation >= 55:
-        return '◎'
-    elif deviation >= 50:
-        return '○'
-    elif deviation >= 45:
-        return '△'
-    elif deviation >= 40:
-        return '▲'
+    if top_deviation >= 70:
+        return '◎◎◎', '本命が圧倒的で非常に予想しやすいレースです'
+    elif top_deviation >= 65:
+        return '◎◎', '本命が明確で予想しやすいレースです'
+    elif top_deviation >= 60:
+        return '◎', '本命が有力で信頼できるレースです'
+    elif top_deviation >= 55:
+        return '○', '混戦模様ですが予想可能なレースです'
+    elif top_deviation >= 50:
+        return '△', '大混戦で予想が難しいレースです'
     else:
-        return '×'
+        return '▲', '超混戦で要注意のレースです'
 
 # =====================================================================
 # 予測モデル（predict_daily_standalone.py と同じ）
@@ -250,7 +248,6 @@ class EOIPLPredictor:
         # 偏差値を追加してスキル順にソート
         for i, pred in enumerate(predictions):
             pred['deviation'] = deviations[i]
-            pred['recommendation'] = get_recommendation_level(deviations[i])
         
         # スキル順（偏差値降順）にソート
         predictions.sort(key=lambda x: x['total_skill'], reverse=True)
@@ -284,12 +281,16 @@ def format_race_discord(predictions: List[Dict], race_id: str) -> str:
     race_bango = predictions[0]['race_bango']
     venue_name = VENUE_NAMES.get(keibajo_code, str(keibajo_code))
     
+    # 1位馬の偏差値からレース推奨度を取得
+    top_deviation = predictions[0]['deviation']
+    race_recommendation, race_comment = get_race_recommendation(top_deviation)
+    
     # タイトル
-    output = f"【{venue_name} {race_bango}R】\n"
+    output = f"【{venue_name} {race_bango}R】  レース推奨度: {race_recommendation} (1位偏差値: {top_deviation:.1f})\n"
     output += "```\n"
     
     # テーブルヘッダー
-    output += f"{'順位':<6}{'馬番':<6}{'馬名':<24}{'推奨度':<8}{'偏差値':<8}\n"
+    output += f"{'順位':<6}{'馬番':<6}{'馬名':<24}{'偏差値':<8}\n"
     output += "-" * 60 + "\n"
     
     # 各馬のデータ
@@ -297,10 +298,9 @@ def format_race_discord(predictions: List[Dict], race_id: str) -> str:
         rank = pred['rank']
         umaban = pred['umaban']
         bamei = pred['bamei'][:20]  # 馬名は20文字まで
-        recommendation = pred['recommendation']
         deviation = pred['deviation']
         
-        output += f"{rank:<6}{umaban}番{'':<4}{bamei:<24}{recommendation:<8}{deviation:>5.1f}\n"
+        output += f"{rank:<6}{umaban}番{'':<4}{bamei:<24}{deviation:>5.1f}\n"
     
     output += "```\n"
     
@@ -311,6 +311,10 @@ def format_race_discord(predictions: List[Dict], race_id: str) -> str:
     output += f"\n🎯 **推奨買い目**\n"
     output += f"  Top3: {', '.join(top3)}\n"
     output += f"  Top5: {', '.join(top5)}\n"
+    
+    # レース分析コメント
+    output += f"\n💡 **レース分析**\n"
+    output += f"  {race_comment}（推奨度: {race_recommendation}）\n"
     
     return output
 
