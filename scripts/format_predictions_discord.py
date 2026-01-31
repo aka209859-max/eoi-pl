@@ -166,19 +166,31 @@ class EOIPLPredictor:
         distance_data = self.feature_db['distance_adaptation'][ketto]
         kyori_key = str(kyori)
         if kyori_key in distance_data:
-            return distance_data[kyori_key]
+            # avg_rank を取り出す
+            dist_info = distance_data[kyori_key]
+            if isinstance(dist_info, dict):
+                return -np.log(max(dist_info.get('avg_rank', 8.0), 1.0))
+            return 0.0
         available = [int(k) for k in distance_data.keys()]
         if not available:
             return 0.0
         closest = min(available, key=lambda x: abs(x - kyori))
-        return distance_data[str(closest)]
+        dist_info = distance_data[str(closest)]
+        if isinstance(dist_info, dict):
+            return -np.log(max(dist_info.get('avg_rank', 8.0), 1.0))
+        return 0.0
     
     def calculate_track_adaptation(self, ketto: str, track_code: int) -> float:
         if ketto not in self.feature_db.get('track_adaptation', {}):
             return 0.0
         track_data = self.feature_db['track_adaptation'][ketto]
         track_key = str(track_code)
-        return track_data.get(track_key, 0.0)
+        track_info = track_data.get(track_key)
+        if track_info is None:
+            return 0.0
+        if isinstance(track_info, dict):
+            return -np.log(max(track_info.get('avg_rank', 8.0), 1.0))
+        return 0.0
     
     def predict_race(self, conn, race_id: str) -> List[Dict]:
         """レース予想を実行して全頭のデータを返す"""
