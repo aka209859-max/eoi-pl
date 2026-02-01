@@ -1,83 +1,143 @@
-# 🏇 EOI-PL v1.0-Prime 完全版実装計画書
+# 🏇 EOI-PL v1.0-Prime 完全実装計画書
 
-**作成日**: 2026-02-01  
-**対象**: Web UI + Discord Bot 完全実装  
-**環境**: Windows (E:\eoi-pl)  
-**Discord**: ronrq0581_10975
-
----
-
-## 🎯 実装目標
-
-### **Phase 1: Web UI（30分）**
-- ✅ ボタン1つで予想生成
-- ✅ note記事用にコピペ可能
-- ✅ 全レース・全馬表示
-
-### **Phase 2: Discord Bot定時配信（1時間）**
-- ✅ 毎朝9:00自動配信
-- ✅ 手動実行コマンド（!予想）
-- ✅ 推奨度フィルタリング（★4以上）
+**作成日**: 2026-02-01 06:20 JST  
+**対象**: Enable CEO  
+**目的**: Web UI + Discord定時配信の完全実装  
+**所要時間**: 2時間（Web UI 30分 + Discord 1時間 + テスト 30分）
 
 ---
 
-## 📊 現在の完成状況
+## 📊 現状整理（2026-02-01 06:17時点）
 
-### ✅ **完成済み**
-1. **Python FastAPI サーバー** (`E:\eoi-pl\api\main.py`)
-   - ✅ GET /api/health - ヘルスチェック
-   - ✅ GET /api/dates - 利用可能な日付一覧
-   - ✅ GET /api/predictions/:date - 全レース・全馬予想
-   - ✅ PostgreSQL接続（81,884レース）
-   - ✅ feature_database_2020_2025.json（28MB）
-   - ✅ EOIPLPredictor（完全版予想ロジック）
+### ✅ 完成しているもの
 
-2. **データベース**
-   - ✅ PostgreSQL (localhost:5432)
-   - ✅ Database: eoi_pl
-   - ✅ User: postgres / Password: postgres123
-   - ✅ 2026年データあり（kaisai_tsukihi: 102, 103, 104, 105...）
+#### 1. **Python FastAPI サーバー（完全動作）**
+- **場所**: `/home/user/eoi-pl/api/main.py`
+- **起動**: `python3 api/main.py`
+- **URL**: `http://localhost:8000`
 
-3. **予想ロジック**
-   - ✅ スキル計算（馬30%、騎手15%、調教師10%、他）
-   - ✅ 偏差値算出（標準偏差ベース）
-   - ✅ 推奨度判定（★5段階評価）
-   - ✅ Top3/Top5買い目生成
+**実装済みエンドポイント**:
+```bash
+GET /api/health              # システムヘルスチェック
+GET /api/dates               # 利用可能な日付一覧（当日+翌日）
+GET /api/predictions/:date   # 指定日の全レース・全馬予想
+```
 
-### ❌ **未実装**
-1. Web UI（HTML + JavaScript）
-2. note用コピー機能
-3. Discord Bot
-4. 定時配信機能
-5. Windows Service化
+**動作確認済み**:
+```bash
+# ヘルスチェック
+curl http://localhost:8000/api/health
+# → {"status":"healthy","database":"OK (81,884 races)","feature_db":"OK"}
+
+# 予想生成（2026/01/02の48レース）
+curl http://localhost:8000/api/predictions/20260102
+# → {"date":"20260102","races":[48レース分の予想データ]}
+```
+
+**予想データの構造**:
+```json
+{
+  "date": "20260102",
+  "generated_at": "2026-02-01T06:00:00+09:00",
+  "races": [
+    {
+      "race_id": "202601024501",
+      "venue": "川崎",
+      "race_no": 1,
+      "rating": "★★★★☆",
+      "top_deviation": 69.0,
+      "horses": [
+        {
+          "rank": 1,
+          "umaban": 2,
+          "bamei": "ビターメロン",
+          "deviation": 69.0
+        },
+        // ... 全12頭
+      ],
+      "top3": [2, 10, 8],
+      "top5": [2, 10, 8, 3, 6],
+      "sanrenpuku": [[2,10,8], [2,10,3], ...],
+      "sanrentan": [[2,10,8], [2,8,10], ...],
+      "analysis": "本命が明確で予想しやすいレースです"
+    }
+    // ... 残り47レース
+  ]
+}
+```
+
+#### 2. **データ基盤（完全整備済み）**
+- **PostgreSQL**: `localhost:5432/eoi_pl`
+  - races: 80,865レコード（2020-2025年）
+  - entries: 828,151レコード
+  - 2026年データ: 14,521レース（kaisai_tsukihi=102, 103, 104...）
+- **feature_database**: `/home/user/eoi-pl/data/feature_database_2020_2025.json` (27MB)
+  - 馬・騎手・調教師の統計情報
+
+#### 3. **AI予想エンジン（完全実装）**
+- **モデル**: Plackett-Luce + Power EP (α=0.5)
+- **精度**: Top3≥1 90.06%、Top5≥3 28.23%
+- **予想ロジック**:
+  - スキル計算（馬30%、騎手15%、調教師10%、etc）
+  - 偏差値算出（統計的相対評価）
+  - 推奨度判定（★1〜5）
+  - 買い目生成（三連複≤9点、三連単≤12点）
+
+### ❌ 未完成のもの
+
+#### 1. **Web UI（CEOの要件）**
+```
+【CEO要求】
+- Webサイトを作成
+- ボタンを押したら予想が表示される
+- note記事にそのままコピペできる形式で出力
+- 私（CEO）だけがアクセスできる
+```
+
+**現状**: Hono WebアプリのCloudflare Workers形式export問題で起動失敗
+
+#### 2. **Discord定時配信（CEOの要件）**
+```
+【CEO要求】
+- 定時（毎日9:00）で自動配信
+- ★★★★★ / ★★★★☆の推奨レースのみ配信
+```
+
+**現状**: 未着手
 
 ---
 
-## 🔧 Phase 1: Web UI実装（30分）
+## 🎯 実装計画
 
-### **Step 1-1: Python APIに静的ファイル配信機能を追加**
+### **Phase 1: Web UI実装（所要時間: 30分）**
 
-**ファイル**: `E:\eoi-pl\api\main.py`
+#### **方針: Python FastAPIに静的HTML配信機能を追加**
+理由:
+- ✅ Python APIが完全動作している
+- ✅ Cloudflare Workers問題を回避
+- ✅ Windows環境で即座に利用可能
+- ✅ CEO専用（localhost限定）
 
-**追加するコード（ファイル冒頭のimport文の後）**:
+#### **Step 1-1: FastAPIにHTML配信機能追加（10分）**
+
+**修正ファイル**: `api/main.py`
 
 ```python
+# 既存のインポートに追加
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import os
 
-# 静的ファイル配信
-static_dir = Path(__file__).parent / "static"
-static_dir.mkdir(exist_ok=True)
-app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
-```
+# 静的ファイルディレクトリの作成
+os.makedirs("api/static", exist_ok=True)
 
-**追加するコード（最後の if __name__ == "__main__": の前）**:
+# 静的ファイル配信（CSS/JS/画像）
+app.mount("/static", StaticFiles(directory="api/static"), name="static")
 
-```python
+# メインページ（HTML配信）
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    """メインページ"""
+    """予想配信センターのメインページ"""
     return """
 <!DOCTYPE html>
 <html lang="ja">
@@ -89,64 +149,61 @@ async def index():
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <!-- ヘッダー -->
-    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold">
-                <i class="fas fa-horse-head mr-2"></i>
+    <div class="container mx-auto p-8">
+        <!-- ヘッダー -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-horse-head text-blue-600 mr-3"></i>
                 EOI-PL 予想配信センター
             </h1>
-            <p class="text-blue-100 mt-2">地方競馬AI予想システム v1.0-Prime</p>
+            <p class="text-gray-600 mt-2">地方競馬AI予想 v1.0-Prime</p>
         </div>
-    </header>
 
-    <!-- メインコンテンツ -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- 日付選択 -->
+        <!-- 日付選択 + 予想生成ボタン -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <div class="flex flex-col md:flex-row items-center gap-4">
                 <label class="text-lg font-semibold text-gray-700">
-                    <i class="fas fa-calendar-alt mr-2"></i>
+                    <i class="far fa-calendar-alt mr-2"></i>
                     予想日を選択:
                 </label>
-                <select id="dateSelect" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
-                    <option value="">読み込み中...</option>
+                <select id="dateSelect" class="border-2 border-gray-300 rounded-lg p-3 text-lg flex-1">
+                    <option>読み込み中...</option>
                 </select>
-                <button id="generateBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition">
-                    <i class="fas fa-play mr-2"></i>
+                <button id="generateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transition">
+                    <i class="fas fa-magic mr-2"></i>
                     予想を生成
                 </button>
             </div>
         </div>
 
-        <!-- 予想結果エリア -->
+        <!-- アクションボタン（予想生成後に表示） -->
+        <div id="actionButtons" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+            <div class="flex flex-col md:flex-row gap-4">
+                <button id="copyNoteBtn" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition">
+                    <i class="fas fa-copy mr-2"></i>
+                    note用にコピー
+                </button>
+                <button id="copyDiscordBtn" class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition">
+                    <i class="fab fa-discord mr-2"></i>
+                    Discord用にコピー
+                </button>
+            </div>
+        </div>
+
+        <!-- 予想結果表示エリア -->
         <div id="predictions" class="space-y-6">
-            <div class="text-center text-gray-500 py-12">
+            <div class="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
                 <i class="fas fa-info-circle text-4xl mb-4"></i>
                 <p class="text-lg">日付を選択して「予想を生成」ボタンを押してください</p>
             </div>
         </div>
 
-        <!-- アクションボタン -->
-        <div id="actionButtons" class="hidden mt-6 flex gap-4">
-            <button id="copyNoteBtn" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-md transition">
-                <i class="fas fa-copy mr-2"></i>
-                note用にコピー
-            </button>
-            <button id="copyDiscordBtn" class="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-md transition">
-                <i class="fab fa-discord mr-2"></i>
-                Discord用にコピー
-            </button>
-        </div>
-    </main>
-
-    <!-- フッター -->
-    <footer class="bg-gray-800 text-white py-6 mt-12">
-        <div class="container mx-auto px-4 text-center">
+        <!-- フッター -->
+        <div class="mt-8 text-center text-gray-600">
             <p>&copy; 2026 EOI-PL v1.0-Prime | Enable CEO</p>
-            <p class="text-gray-400 text-sm mt-2">的中率: Top3≥1 90.06% | Top5≥3 28.23%</p>
+            <p class="text-sm mt-2">的中率: Top3≥1 90.06% | Top5≥3 28.23%</p>
         </div>
-    </footer>
+    </div>
 
     <script src="/static/app.js"></script>
 </body>
@@ -154,9 +211,9 @@ async def index():
     """
 ```
 
-### **Step 1-2: Frontend JavaScript実装**
+#### **Step 1-2: Frontend JavaScript実装（15分）**
 
-**ファイル**: `E:\eoi-pl\api\static\app.js`
+**新規ファイル**: `api/static/app.js`
 
 ```javascript
 // =====================================================================
@@ -165,24 +222,15 @@ async def index():
 
 let currentPredictions = null;
 
-// ページ読み込み時に日付一覧を取得
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadDates();
+// DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    loadDates();
     setupEventListeners();
 });
 
-// イベントリスナーの設定
-function setupEventListeners() {
-    const generateBtn = document.getElementById('generateBtn');
-    const copyNoteBtn = document.getElementById('copyNoteBtn');
-    const copyDiscordBtn = document.getElementById('copyDiscordBtn');
-
-    generateBtn.addEventListener('click', generatePredictions);
-    copyNoteBtn.addEventListener('click', () => copyToClipboard('note'));
-    copyDiscordBtn.addEventListener('click', () => copyToClipboard('discord'));
-}
-
-// 日付一覧を読み込み
+// =====================================================================
+// 日付一覧の読み込み
+// =====================================================================
 async function loadDates() {
     try {
         const response = await fetch('/api/dates');
@@ -191,12 +239,11 @@ async function loadDates() {
         const select = document.getElementById('dateSelect');
         
         if (data.dates.length === 0) {
-            select.innerHTML = '<option value="">利用可能な日付がありません</option>';
+            select.innerHTML = '<option>利用可能な日付がありません</option>';
             return;
         }
         
-        select.innerHTML = '<option value="">日付を選択してください</option>';
-        
+        select.innerHTML = '<option value="">--- 日付を選択 ---</option>';
         data.dates.forEach(date => {
             const option = document.createElement('option');
             option.value = date;
@@ -204,15 +251,30 @@ async function loadDates() {
             select.appendChild(option);
         });
     } catch (error) {
-        console.error('日付読み込みエラー:', error);
-        alert('日付の読み込みに失敗しました');
+        console.error('日付取得エラー:', error);
+        alert('日付の取得に失敗しました');
     }
 }
 
-// 予想を生成
+// =====================================================================
+// イベントリスナーの設定
+// =====================================================================
+function setupEventListeners() {
+    // 予想生成ボタン
+    document.getElementById('generateBtn').addEventListener('click', generatePredictions);
+    
+    // note用コピーボタン
+    document.getElementById('copyNoteBtn').addEventListener('click', copyForNote);
+    
+    // Discord用コピーボタン
+    document.getElementById('copyDiscordBtn').addEventListener('click', copyForDiscord);
+}
+
+// =====================================================================
+// 予想生成
+// =====================================================================
 async function generatePredictions() {
-    const dateSelect = document.getElementById('dateSelect');
-    const selectedDate = dateSelect.value;
+    const selectedDate = document.getElementById('dateSelect').value;
     
     if (!selectedDate) {
         alert('日付を選択してください');
@@ -220,53 +282,40 @@ async function generatePredictions() {
     }
     
     const predictionsDiv = document.getElementById('predictions');
-    predictionsDiv.innerHTML = `
-        <div class="text-center py-12">
-            <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
-            <p class="text-lg text-gray-700">予想を生成中...</p>
-        </div>
-    `;
+    predictionsDiv.innerHTML = '<div class="bg-white rounded-lg shadow-md p-8 text-center"><i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i><p class="text-lg text-gray-600">予想を生成中...</p></div>';
     
     try {
         const response = await fetch(`/api/predictions/${selectedDate}`);
+        const data = await response.json();
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        currentPredictions = await response.json();
-        displayPredictions(currentPredictions);
+        currentPredictions = data;
+        displayPredictions(data);
         
         // アクションボタンを表示
         document.getElementById('actionButtons').classList.remove('hidden');
     } catch (error) {
         console.error('予想生成エラー:', error);
-        predictionsDiv.innerHTML = `
-            <div class="text-center py-12 text-red-600">
-                <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
-                <p class="text-lg">予想の生成に失敗しました</p>
-                <p class="text-sm mt-2">${error.message}</p>
-            </div>
-        `;
+        predictionsDiv.innerHTML = '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"><strong>エラー:</strong> 予想の生成に失敗しました</div>';
     }
 }
 
-// 予想を表示
+// =====================================================================
+// 予想結果の表示
+// =====================================================================
 function displayPredictions(data) {
     const predictionsDiv = document.getElementById('predictions');
     
     let html = `
-        <div class="bg-blue-50 rounded-lg p-4 mb-6">
-            <h2 class="text-2xl font-bold text-blue-900">
-                <i class="fas fa-calendar-check mr-2"></i>
-                ${formatDate(data.date)} の予想（${data.races.length}レース）
-            </h2>
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold">📅 ${formatDate(data.date)} の予想</h2>
+            <p class="mt-2">生成日時: ${new Date(data.generated_at).toLocaleString('ja-JP')}</p>
+            <p class="mt-1">レース数: ${data.races.length}レース</p>
         </div>
     `;
     
-    data.races.forEach(race => {
+    data.races.forEach((race, index) => {
         html += `
-            <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <!-- レースヘッダー -->
                 <div class="flex items-center justify-between mb-4 pb-4 border-b-2 border-gray-200">
                     <h3 class="text-xl font-bold text-gray-800">
@@ -274,43 +323,35 @@ function displayPredictions(data) {
                     </h3>
                     <div class="flex items-center gap-4">
                         <span class="text-2xl">${race.rating}</span>
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-bold">
-                            1位偏差値: ${race.top_deviation.toFixed(1)}
+                        <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-bold">
+                            偏差値Top: ${race.top_deviation.toFixed(1)}
                         </span>
                     </div>
                 </div>
                 
-                <!-- 推奨買い目 -->
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bg-yellow-50 p-4 rounded-lg">
-                        <div class="text-sm text-gray-600 mb-1">Top3予想</div>
-                        <div class="text-2xl font-bold text-yellow-700">
-                            ${race.top3.join(' - ')}
-                        </div>
+                <!-- 推奨情報 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <p class="text-sm text-gray-600 mb-1">Top3予想</p>
+                        <p class="text-2xl font-bold text-yellow-700">${race.top3.join('-')}</p>
                     </div>
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <div class="text-sm text-gray-600 mb-1">Top5予想</div>
-                        <div class="text-2xl font-bold text-green-700">
-                            ${race.top5.join(' - ')}
-                        </div>
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <p class="text-sm text-gray-600 mb-1">Top5予想</p>
+                        <p class="text-xl font-bold text-green-700">${race.top5.join('-')}</p>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-gray-600 mb-1">三連複</p>
+                        <p class="text-sm font-mono text-blue-700">${formatBetting(race.sanrenpuku)}</p>
                     </div>
                 </div>
                 
-                <!-- レース分析 -->
-                <div class="bg-gray-50 p-4 rounded-lg mb-4">
-                    <div class="text-sm text-gray-600 mb-1">
-                        <i class="fas fa-lightbulb mr-2"></i>レース分析
-                    </div>
-                    <div class="text-gray-800">${race.analysis}</div>
-                </div>
-                
-                <!-- 全馬リスト -->
+                <!-- 全馬情報 -->
                 <div class="overflow-x-auto">
-                    <table class="w-full">
+                    <table class="w-full text-sm">
                         <thead class="bg-gray-100">
                             <tr>
                                 <th class="px-4 py-2 text-left">順位</th>
-                                <th class="px-4 py-2 text-left">馬番</th>
+                                <th class="px-4 py-2 text-center">馬番</th>
                                 <th class="px-4 py-2 text-left">馬名</th>
                                 <th class="px-4 py-2 text-right">偏差値</th>
                             </tr>
@@ -319,13 +360,18 @@ function displayPredictions(data) {
                             ${race.horses.map(horse => `
                                 <tr class="border-b hover:bg-gray-50 ${horse.rank <= 3 ? 'bg-yellow-50' : ''}">
                                     <td class="px-4 py-2 font-bold">${horse.rank}</td>
-                                    <td class="px-4 py-2">${horse.umaban}番</td>
+                                    <td class="px-4 py-2 text-center font-bold text-blue-600">${horse.umaban}</td>
                                     <td class="px-4 py-2">${horse.bamei}</td>
                                     <td class="px-4 py-2 text-right font-mono">${horse.deviation.toFixed(1)}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- 分析コメント -->
+                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <p class="text-gray-700"><i class="fas fa-comment-dots mr-2"></i>${race.analysis}</p>
                 </div>
             </div>
         `;
@@ -334,527 +380,483 @@ function displayPredictions(data) {
     predictionsDiv.innerHTML = html;
 }
 
-// クリップボードにコピー
-function copyToClipboard(format) {
+// =====================================================================
+// note用コピー機能
+// =====================================================================
+function copyForNote() {
     if (!currentPredictions) {
         alert('予想データがありません');
         return;
     }
     
-    let text = '';
+    let noteText = `# 🏇 ${formatDate(currentPredictions.date)} 地方競馬AI予想\n\n`;
+    noteText += `**生成日時**: ${new Date(currentPredictions.generated_at).toLocaleString('ja-JP')}\n\n`;
+    noteText += `---\n\n`;
     
-    if (format === 'note') {
-        text = generateNoteFormat(currentPredictions);
-    } else if (format === 'discord') {
-        text = generateDiscordFormat(currentPredictions);
-    }
-    
-    navigator.clipboard.writeText(text).then(() => {
-        alert(`${format === 'note' ? 'note' : 'Discord'}用テキストをコピーしました！`);
-    }).catch(err => {
-        console.error('コピーエラー:', err);
-        alert('コピーに失敗しました');
-    });
-}
-
-// note用フォーマット生成
-function generateNoteFormat(data) {
-    let text = `# ${formatDate(data.date)} 地方競馬AI予想\n\n`;
-    text += `**EOI-PL v1.0-Prime by Enable CEO**\n\n`;
-    text += `全${data.races.length}レースの予想を掲載します。\n\n`;
-    text += `---\n\n`;
-    
-    data.races.forEach(race => {
-        text += `## 【${race.venue} ${race.race_no}R】${race.rating}\n\n`;
-        text += `**1位偏差値**: ${race.top_deviation.toFixed(1)}\n\n`;
-        text += `### 推奨買い目\n`;
-        text += `- **Top3予想**: ${race.top3.join('-')}\n`;
-        text += `- **Top5予想**: ${race.top5.join('-')}\n\n`;
-        text += `### レース分析\n`;
-        text += `${race.analysis}\n\n`;
-        text += `### 全馬リスト\n\n`;
+    currentPredictions.races.forEach(race => {
+        noteText += `## 【${race.venue} ${race.race_no}R】${race.rating}\n\n`;
+        noteText += `**1位偏差値**: ${race.top_deviation.toFixed(1)}\n`;
+        noteText += `**Top3予想**: ${race.top3.join('-')}\n`;
+        noteText += `**Top5予想**: ${race.top5.join('-')}\n\n`;
         
-        race.horses.forEach(horse => {
-            text += `${horse.rank}. ${horse.umaban}番 **${horse.bamei}** (偏差値: ${horse.deviation.toFixed(1)})\n`;
+        noteText += `### 全馬順位\n\n`;
+        race.horses.forEach(h => {
+            noteText += `${h.rank}. ${h.umaban}番 **${h.bamei}** (偏差値: ${h.deviation.toFixed(1)})\n`;
         });
         
-        text += `\n---\n\n`;
+        noteText += `\n**分析**: ${race.analysis}\n\n`;
+        noteText += `---\n\n`;
     });
     
-    text += `**的中率**: Top3≥1 90.06% | Top5≥3 28.23%\n`;
-    text += `**システム**: EOI-PL v1.0-Prime (Plackett-Luce + Power EP)\n`;
+    noteText += `\n*的中率: Top3≥1 90.06% | Top5≥3 28.23%*\n`;
+    noteText += `*© 2026 EOI-PL v1.0-Prime | Enable CEO*\n`;
     
-    return text;
+    navigator.clipboard.writeText(noteText).then(() => {
+        alert('✅ note記事用テキストをクリップボードにコピーしました！');
+    }).catch(err => {
+        console.error('コピーエラー:', err);
+        alert('❌ コピーに失敗しました');
+    });
 }
 
-// Discord用フォーマット生成
-function generateDiscordFormat(data) {
-    let text = `**🏇 ${formatDate(data.date)} 地方競馬AI予想**\n`;
-    text += `EOI-PL v1.0-Prime | Enable CEO\n\n`;
+// =====================================================================
+// Discord用コピー機能
+// =====================================================================
+function copyForDiscord() {
+    if (!currentPredictions) {
+        alert('予想データがありません');
+        return;
+    }
     
-    // 推奨度★4以上のみ
-    const recommendedRaces = data.races.filter(r => 
+    let discordText = `**🏇 ${formatDate(currentPredictions.date)} 地方競馬AI予想**\n\n`;
+    
+    // ★★★★★ / ★★★★☆ のレースのみ抽出
+    const highRatingRaces = currentPredictions.races.filter(r => 
         r.rating === '★★★★★' || r.rating === '★★★★☆'
     );
     
-    if (recommendedRaces.length === 0) {
-        text += `本日は推奨レースがありません。\n`;
-        return text;
+    if (highRatingRaces.length === 0) {
+        alert('推奨レース（★4以上）がありません');
+        return;
     }
     
-    text += `**推奨レース**: ${recommendedRaces.length}/${data.races.length}レース\n\n`;
-    
-    recommendedRaces.forEach(race => {
-        text += `**【${race.venue} ${race.race_no}R】${race.rating}**\n`;
-        text += `1位偏差値: ${race.top_deviation.toFixed(1)}\n`;
-        text += `予想: ${race.top3.join('-')}\n`;
-        text += `推奨: ${race.top5.join('-')}\n`;
-        text += `分析: ${race.analysis}\n\n`;
+    highRatingRaces.forEach(race => {
+        discordText += `**【${race.venue} ${race.race_no}R】${race.rating}**\n`;
+        discordText += `偏差値Top: ${race.top_deviation.toFixed(1)}\n`;
+        discordText += `予想: ${race.top3.join('-')}\n`;
+        discordText += `推奨買い目: ${race.top5.join('-')}\n`;
+        discordText += `${race.analysis}\n\n`;
     });
     
-    text += `**的中率**: Top3≥1 90.06% | Top5≥3 28.23%\n`;
+    discordText += `*的中率: Top3≥1 90.06% | Top5≥3 28.23%*\n`;
     
-    return text;
+    navigator.clipboard.writeText(discordText).then(() => {
+        alert(`✅ Discord用テキストをクリップボードにコピーしました！\n推奨レース: ${highRatingRaces.length}件`);
+    }).catch(err => {
+        console.error('コピーエラー:', err);
+        alert('❌ コピーに失敗しました');
+    });
 }
 
-// 日付フォーマット（YYYYMMDD → YYYY/MM/DD）
+// =====================================================================
+// ユーティリティ関数
+// =====================================================================
 function formatDate(dateStr) {
-    if (!dateStr || dateStr.length !== 8) return dateStr;
+    // YYYYMMDD → YYYY/MM/DD
     const year = dateStr.substring(0, 4);
     const month = dateStr.substring(4, 6);
     const day = dateStr.substring(6, 8);
     return `${year}/${month}/${day}`;
 }
+
+function formatBetting(betting) {
+    // 買い目配列を整形
+    if (!betting || betting.length === 0) return 'なし';
+    return betting.slice(0, 3).map(b => b.join('-')).join(', ') + '...';
+}
 ```
+
+#### **Step 1-3: 動作テスト（5分）**
+
+```bash
+# Python API再起動
+cd /home/user/eoi-pl
+fuser -k 8000/tcp 2>/dev/null || true
+python3 api/main.py > /tmp/webui_api.log 2>&1 &
+
+# ブラウザで確認
+# http://localhost:8000/
+```
+
+**期待結果**:
+- ✅ 日付選択ドロップダウン表示
+- ✅ 「予想を生成」ボタンクリック → 全レース表示
+- ✅ 「note用にコピー」ボタン → Markdown形式でクリップボードにコピー
+- ✅ 「Discord用にコピー」ボタン → Discord形式でクリップボードにコピー
 
 ---
 
-## 🤖 Phase 2: Discord Bot実装（1時間）
+### **Phase 2: Discord Bot定時配信実装（所要時間: 1時間）**
 
-### **Step 2-1: Discord Bot基本構造**
+#### **Step 2-1: Discord Bot基本実装（30分）**
 
-**ファイル**: `E:\eoi-pl\discord_bot.py`
+**新規ファイル**: `/home/user/eoi-pl/discord_bot.py`
 
 ```python
 #!/usr/bin/env python3
 """
 EOI-PL v1.0-Prime Discord Bot
-地方競馬AI予想自動配信システム
-
-機能:
-- 毎朝9:00に自動配信
-- 手動実行コマンド（!予想）
-- 推奨度フィルタリング（★4以上）
+- 定時配信（毎朝9:00）
+- 手動実行コマンド（!予想 [YYYYMMDD]）
 """
 
 import discord
 from discord.ext import commands, tasks
 import httpx
-from datetime import datetime, time
 import asyncio
-from typing import List, Dict
+from datetime import datetime, timezone, timedelta
+import os
+import sys
 
 # =====================================================================
 # 設定
 # =====================================================================
+DISCORD_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+CHANNEL_ID = int(os.getenv('DISCORD_CHANNEL_ID', 0))
+API_URL = os.getenv('API_URL', 'http://localhost:8000')
 
-# Discord Bot Token（環境変数から取得することを推奨）
-DISCORD_BOT_TOKEN = "YOUR_DISCORD_BOT_TOKEN_HERE"  # ← ここにトークンを設定
+# JST タイムゾーン
+JST = timezone(timedelta(hours=9))
 
-# 配信先チャンネルID
-TARGET_CHANNEL_ID = 0  # ← ここにチャンネルIDを設定
-
-# Python API URL
-API_URL = "http://localhost:8000"
-
-# 配信時刻（毎朝9:00）
-BROADCAST_TIME = time(hour=9, minute=0)
-
-# =====================================================================
 # Discord Bot設定
-# =====================================================================
-
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # =====================================================================
-# ヘルパー関数
+# Bot起動イベント
 # =====================================================================
-
-def format_date(date_str: str) -> str:
-    """日付フォーマット（YYYYMMDD → YYYY/MM/DD）"""
-    if len(date_str) != 8:
-        return date_str
-    return f"{date_str[:4]}/{date_str[4:6]}/{date_str[6:]}"
-
-def create_race_embed(race: Dict) -> discord.Embed:
-    """レース情報のEmbedを作成"""
-    embed = discord.Embed(
-        title=f"【{race['venue']} {race['race_no']}R】{race['rating']}",
-        description=race['analysis'],
-        color=0xFFD700 if race['rating'] == '★★★★★' else 0x00FF00
-    )
-    
-    embed.add_field(
-        name="1位偏差値",
-        value=f"{race['top_deviation']:.1f}",
-        inline=True
-    )
-    
-    embed.add_field(
-        name="Top3予想",
-        value=f"{race['top3'][0]}-{race['top3'][1]}-{race['top3'][2]}",
-        inline=True
-    )
-    
-    embed.add_field(
-        name="Top5予想",
-        value='-'.join(map(str, race['top5'])),
-        inline=True
-    )
-    
-    # 上位5頭の詳細
-    top5_horses = race['horses'][:5]
-    horses_text = '\n'.join([
-        f"{h['rank']}. {h['umaban']}番 {h['bamei']} ({h['deviation']:.1f})"
-        for h in top5_horses
-    ])
-    
-    embed.add_field(
-        name="上位5頭",
-        value=horses_text,
-        inline=False
-    )
-    
-    embed.set_footer(text="EOI-PL v1.0-Prime | Enable CEO")
-    
-    return embed
-
-async def fetch_predictions(date: str) -> Dict:
-    """予想データを取得"""
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get(f"{API_URL}/api/predictions/{date}")
-        response.raise_for_status()
-        return response.json()
-
-# =====================================================================
-# Bot イベント
-# =====================================================================
-
 @bot.event
 async def on_ready():
-    """Bot起動時"""
-    print(f'✅ Bot起動: {bot.user} (ID: {bot.user.id})')
-    print(f'🏇 EOI-PL Discord Bot v1.0-Prime')
-    print(f'📅 定時配信: 毎朝{BROADCAST_TIME.hour}:{BROADCAST_TIME.minute:02d}')
+    print(f'✅ Discord Bot起動: {bot.user}')
+    print(f'📡 API URL: {API_URL}')
+    print(f'📢 配信チャンネルID: {CHANNEL_ID}')
     
     # 定時配信タスク開始
-    daily_broadcast.start()
+    if not daily_prediction_task.is_running():
+        daily_prediction_task.start()
 
-@bot.event
-async def on_command_error(ctx, error):
-    """コマンドエラーハンドリング"""
-    if isinstance(error, commands.CommandNotFound):
+# =====================================================================
+# 定時配信タスク（毎朝9:00）
+# =====================================================================
+@tasks.loop(hours=24)
+async def daily_prediction_task():
+    """毎朝9:00に自動配信"""
+    now = datetime.now(JST)
+    
+    # 9:00になるまで待機
+    target_time = now.replace(hour=9, minute=0, second=0, microsecond=0)
+    if now >= target_time:
+        target_time += timedelta(days=1)
+    
+    wait_seconds = (target_time - now).total_seconds()
+    print(f'⏰ 次回配信まで待機: {wait_seconds/3600:.1f}時間 ({target_time.strftime("%Y-%m-%d %H:%M")})')
+    
+    await asyncio.sleep(wait_seconds)
+    
+    # 配信実行
+    await send_daily_prediction()
+
+@daily_prediction_task.before_loop
+async def before_daily_prediction_task():
+    """タスク開始前にBotの準備完了を待機"""
+    await bot.wait_until_ready()
+
+# =====================================================================
+# 定時配信実行
+# =====================================================================
+async def send_daily_prediction():
+    """当日の予想を配信チャンネルに送信"""
+    channel = bot.get_channel(CHANNEL_ID)
+    if not channel:
+        print(f'❌ チャンネルID {CHANNEL_ID} が見つかりません')
         return
     
-    await ctx.send(f"❌ エラーが発生しました: {str(error)}")
-    print(f"Error: {error}")
-
-# =====================================================================
-# 定時配信タスク
-# =====================================================================
-
-@tasks.loop(hours=24)
-async def daily_broadcast():
-    """毎朝9:00に予想を自動配信"""
+    # 当日の日付取得
+    today = datetime.now(JST).strftime('%Y%m%d')
+    
+    print(f'📡 予想配信開始: {today}')
+    
     try:
-        # 今日の日付
-        today = datetime.now().strftime("%Y%m%d")
+        # Python APIから予想取得
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.get(f'{API_URL}/api/predictions/{today}')
+            response.raise_for_status()
+            data = response.json()
         
-        print(f"📅 定時配信開始: {today}")
-        
-        # チャンネル取得
-        channel = bot.get_channel(TARGET_CHANNEL_ID)
-        if not channel:
-            print(f"❌ チャンネルID {TARGET_CHANNEL_ID} が見つかりません")
-            return
-        
-        # 予想取得
-        try:
-            data = await fetch_predictions(today)
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 404:
-                await channel.send(f"📅 {format_date(today)}\n本日はレース開催がありません。")
-                return
-            raise
-        
-        # ヘッダーメッセージ
-        await channel.send(
-            f"🏇 **{format_date(today)} 地方競馬AI予想**\n"
-            f"EOI-PL v1.0-Prime | Enable CEO\n"
-            f"全{len(data['races'])}レース中、推奨レースを配信します。"
-        )
-        
-        # 推奨度★4以上のレースのみ配信
-        recommended_races = [
+        # ★★★★★ / ★★★★☆ のレースのみ抽出
+        high_rating_races = [
             race for race in data['races']
             if race['rating'] in ['★★★★★', '★★★★☆']
         ]
         
-        if not recommended_races:
-            await channel.send("本日は推奨レースがありません。")
+        if len(high_rating_races) == 0:
+            await channel.send(f'📭 {format_date(today)} は推奨レース（★4以上）がありませんでした')
             return
         
-        await channel.send(f"**推奨レース**: {len(recommended_races)}レース")
+        # ヘッダーメッセージ
+        header_embed = discord.Embed(
+            title=f'🏇 {format_date(today)} 地方競馬AI予想',
+            description=f'推奨レース: {len(high_rating_races)}件 / 全{len(data["races"])}レース',
+            color=0x00ff00,
+            timestamp=datetime.now(JST)
+        )
+        header_embed.set_footer(text='EOI-PL v1.0-Prime | 的中率: Top3≥1 90.06%')
+        await channel.send(embed=header_embed)
         
-        # レースごとにEmbed送信
-        for race in recommended_races:
-            embed = create_race_embed(race)
+        # 各レースの予想を送信
+        for race in high_rating_races:
+            embed = discord.Embed(
+                title=f'【{race["venue"]} {race["race_no"]}R】{race["rating"]}',
+                description=race['analysis'],
+                color=get_rating_color(race['rating'])
+            )
+            
+            embed.add_field(
+                name='📊 1位偏差値',
+                value=f'`{race["top_deviation"]:.1f}`',
+                inline=True
+            )
+            embed.add_field(
+                name='🎯 Top3予想',
+                value=f'**{"-".join(map(str, race["top3"]))}**',
+                inline=True
+            )
+            embed.add_field(
+                name='💎 Top5予想',
+                value=f'{"-".join(map(str, race["top5"]))}',
+                inline=True
+            )
+            
+            # 上位3頭の情報
+            top3_horses = race['horses'][:3]
+            horses_text = '\n'.join([
+                f'`{h["rank"]}位` {h["umaban"]}番 **{h["bamei"]}** (偏差値: {h["deviation"]:.1f})'
+                for h in top3_horses
+            ])
+            embed.add_field(
+                name='🏆 上位3頭',
+                value=horses_text,
+                inline=False
+            )
+            
             await channel.send(embed=embed)
             await asyncio.sleep(1)  # レート制限回避
         
-        # フッター
-        await channel.send(
-            "**的中率**: Top3≥1 90.06% | Top5≥3 28.23%\n"
-            "**システム**: EOI-PL v1.0-Prime (Plackett-Luce + Power EP)"
-        )
+        print(f'✅ 配信完了: {len(high_rating_races)}レース')
         
-        print(f"✅ 定時配信完了: {len(recommended_races)}レース")
-        
+    except httpx.HTTPError as e:
+        print(f'❌ API接続エラー: {e}')
+        await channel.send(f'⚠️ 予想の取得に失敗しました: {e}')
     except Exception as e:
-        print(f"❌ 定時配信エラー: {e}")
-        if channel:
-            await channel.send(f"❌ 予想配信エラーが発生しました: {str(e)}")
-
-@daily_broadcast.before_loop
-async def before_daily_broadcast():
-    """定時配信前の準備"""
-    await bot.wait_until_ready()
-    
-    # 次の配信時刻まで待機
-    now = datetime.now()
-    target = now.replace(
-        hour=BROADCAST_TIME.hour,
-        minute=BROADCAST_TIME.minute,
-        second=0,
-        microsecond=0
-    )
-    
-    # 今日の配信時刻が過ぎていたら明日に設定
-    if now >= target:
-        target = target.replace(day=target.day + 1)
-    
-    wait_seconds = (target - now).total_seconds()
-    print(f"⏰ 次回配信: {target} ({wait_seconds/3600:.1f}時間後)")
-    
-    await asyncio.sleep(wait_seconds)
+        print(f'❌ 予期しないエラー: {e}')
+        await channel.send(f'⚠️ エラーが発生しました: {e}')
 
 # =====================================================================
-# コマンド
+# 手動実行コマンド
 # =====================================================================
-
 @bot.command(name='予想')
 async def manual_prediction(ctx, date: str = None):
     """
     手動で予想を取得
     
-    使い方:
-        !予想          - 今日の予想
-        !予想 20260102 - 指定日の予想
+    使用例:
+      !予想              # 当日の予想
+      !予想 20260201     # 指定日の予想
     """
+    # 日付が指定されていない場合は当日
+    if not date:
+        date = datetime.now(JST).strftime('%Y%m%d')
+    
+    # 日付形式のバリデーション
+    if not (len(date) == 8 and date.isdigit()):
+        await ctx.send('❌ 日付形式が正しくありません（例: 20260201）')
+        return
+    
+    await ctx.send(f'⏳ {format_date(date)} の予想を生成中...')
+    
     try:
-        # 日付が指定されていなければ今日
-        if not date:
-            date = datetime.now().strftime("%Y%m%d")
-        
-        await ctx.send(f"🔄 {format_date(date)}の予想を生成中...")
-        
-        # 予想取得
-        try:
-            data = await fetch_predictions(date)
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 404:
-                await ctx.send(f"❌ {format_date(date)}のレースが見つかりません。")
+        # Python APIから予想取得
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.get(f'{API_URL}/api/predictions/{date}')
+            
+            if response.status_code == 404:
+                await ctx.send(f'📭 {format_date(date)} のレースが見つかりません')
                 return
-            raise
+            
+            response.raise_for_status()
+            data = response.json()
         
-        # ヘッダー
-        await ctx.send(
-            f"🏇 **{format_date(date)} 地方競馬AI予想**\n"
-            f"全{len(data['races'])}レース"
-        )
-        
-        # 推奨度★4以上
-        recommended_races = [
+        # ★★★★★ / ★★★★☆ のレースのみ抽出
+        high_rating_races = [
             race for race in data['races']
             if race['rating'] in ['★★★★★', '★★★★☆']
         ]
         
-        if not recommended_races:
-            await ctx.send("推奨レースがありません。")
-            return
+        # サマリーメッセージ
+        summary = f'✅ {format_date(date)} の予想を生成しました\n'
+        summary += f'📊 全レース: {len(data["races"])}件\n'
+        summary += f'⭐ 推奨レース: {len(high_rating_races)}件'
+        await ctx.send(summary)
         
-        await ctx.send(f"**推奨レース**: {len(recommended_races)}レース")
+        # 推奨レースがあれば送信
+        if len(high_rating_races) > 0:
+            await ctx.send('📢 推奨レース（★4以上）を送信します...')
+            
+            for race in high_rating_races:
+                embed = discord.Embed(
+                    title=f'【{race["venue"]} {race["race_no"]}R】{race["rating"]}',
+                    description=race['analysis'],
+                    color=get_rating_color(race['rating'])
+                )
+                
+                embed.add_field(
+                    name='📊 1位偏差値',
+                    value=f'`{race["top_deviation"]:.1f}`',
+                    inline=True
+                )
+                embed.add_field(
+                    name='🎯 Top3予想',
+                    value=f'**{"-".join(map(str, race["top3"]))}**',
+                    inline=True
+                )
+                embed.add_field(
+                    name='💎 Top5予想',
+                    value=f'{"-".join(map(str, race["top5"]))}',
+                    inline=True
+                )
+                
+                await ctx.send(embed=embed)
+                await asyncio.sleep(1)
         
-        # 最大10レースまで表示
-        for race in recommended_races[:10]:
-            embed = create_race_embed(race)
-            await ctx.send(embed=embed)
-            await asyncio.sleep(0.5)
+    except httpx.HTTPError as e:
+        await ctx.send(f'❌ API接続エラー: {e}')
+    except Exception as e:
+        await ctx.send(f'❌ エラーが発生しました: {e}')
+
+# =====================================================================
+# ヘルスチェックコマンド
+# =====================================================================
+@bot.command(name='health')
+async def health_check(ctx):
+    """システムのヘルスチェック"""
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(f'{API_URL}/api/health')
+            response.raise_for_status()
+            data = response.json()
         
-        if len(recommended_races) > 10:
-            await ctx.send(f"（残り{len(recommended_races) - 10}レースは省略）")
+        embed = discord.Embed(
+            title='✅ システム正常',
+            description='Python APIとPostgreSQLが正常に動作しています',
+            color=0x00ff00
+        )
+        embed.add_field(name='API Status', value=data['status'], inline=True)
+        embed.add_field(name='Database', value=data['database'], inline=True)
+        embed.add_field(name='Feature DB', value=data['feature_db'], inline=True)
+        
+        await ctx.send(embed=embed)
         
     except Exception as e:
-        await ctx.send(f"❌ エラー: {str(e)}")
-        print(f"Error in manual_prediction: {e}")
+        await ctx.send(f'❌ ヘルスチェック失敗: {e}')
 
-@bot.command(name='ヘルプ')
-async def help_command(ctx):
-    """ヘルプを表示"""
-    embed = discord.Embed(
-        title="🏇 EOI-PL Discord Bot コマンド一覧",
-        description="地方競馬AI予想システム",
-        color=0x00FF00
-    )
-    
-    embed.add_field(
-        name="!予想",
-        value="今日の予想を表示",
-        inline=False
-    )
-    
-    embed.add_field(
-        name="!予想 20260102",
-        value="指定日の予想を表示",
-        inline=False
-    )
-    
-    embed.add_field(
-        name="!ヘルプ",
-        value="このヘルプを表示",
-        inline=False
-    )
-    
-    embed.add_field(
-        name="定時配信",
-        value=f"毎朝{BROADCAST_TIME.hour}:{BROADCAST_TIME.minute:02d}に自動配信",
-        inline=False
-    )
-    
-    embed.set_footer(text="EOI-PL v1.0-Prime | Enable CEO")
-    
-    await ctx.send(embed=embed)
+# =====================================================================
+# ユーティリティ関数
+# =====================================================================
+def format_date(date_str: str) -> str:
+    """YYYYMMDD → YYYY/MM/DD"""
+    return f'{date_str[0:4]}/{date_str[4:6]}/{date_str[6:8]}'
+
+def get_rating_color(rating: str) -> int:
+    """レーティングに応じた色を返す"""
+    if rating == '★★★★★':
+        return 0xFFD700  # Gold
+    elif rating == '★★★★☆':
+        return 0x00FF00  # Green
+    elif rating == '★★★☆☆':
+        return 0x0000FF  # Blue
+    elif rating == '★★☆☆☆':
+        return 0xFFA500  # Orange
+    else:
+        return 0x808080  # Gray
 
 # =====================================================================
 # メイン実行
 # =====================================================================
-
-if __name__ == "__main__":
-    if DISCORD_BOT_TOKEN == "YOUR_DISCORD_BOT_TOKEN_HERE":
-        print("❌ エラー: DISCORD_BOT_TOKEN を設定してください")
-        exit(1)
+if __name__ == '__main__':
+    # 環境変数チェック
+    if not DISCORD_TOKEN:
+        print('❌ DISCORD_BOT_TOKEN 環境変数が設定されていません')
+        sys.exit(1)
     
-    if TARGET_CHANNEL_ID == 0:
-        print("⚠️  警告: TARGET_CHANNEL_ID が設定されていません")
+    if CHANNEL_ID == 0:
+        print('❌ DISCORD_CHANNEL_ID 環境変数が設定されていません')
+        sys.exit(1)
     
-    print("🚀 Discord Bot起動中...")
-    bot.run(DISCORD_BOT_TOKEN)
+    # Bot起動
+    print('🚀 Discord Bot起動中...')
+    bot.run(DISCORD_TOKEN)
 ```
 
-### **Step 2-2: 依存関係追加**
+#### **Step 2-2: Discord Bot依存関係インストール（5分）**
 
-**ファイル**: `E:\eoi-pl\api\requirements.txt` に追加
-
-```
-discord.py>=2.3.0
-httpx>=0.25.0
+```bash
+cd /home/user/eoi-pl
+pip3 install discord.py httpx
 ```
 
----
+#### **Step 2-3: Discord Bot動作テスト（10分）**
 
-## 🔧 Windows環境セットアップ手順
+```bash
+# 環境変数設定
+export DISCORD_BOT_TOKEN="あなたのDiscord Botトークン"
+export DISCORD_CHANNEL_ID="配信先チャンネルID"
+export API_URL="http://localhost:8000"
 
-### **Step 3-1: Discord Bot Token取得**
+# Bot起動
+python3 discord_bot.py
 
-1. https://discord.com/developers/applications にアクセス
-2. 「New Application」をクリック
-3. アプリケーション名: `EOI-PL-Bot`
-4. 「Bot」タブへ移動
-5. 「Add Bot」をクリック
-6. 「TOKEN」の「Copy」をクリック
-7. `discord_bot.py` の `DISCORD_BOT_TOKEN` に貼り付け
+# 別ターミナルで手動コマンドテスト
+# Discordで以下を入力:
+# !予想 20260102
+# !health
+```
 
-### **Step 3-2: Discord Bot招待**
+#### **Step 2-4: Windows Service化（NSSM使用）（15分）**
 
-1. 「OAuth2」→「URL Generator」
-2. **SCOPES**: `bot`
-3. **BOT PERMISSIONS**: 
-   - Send Messages
-   - Embed Links
-   - Read Message History
-4. 生成されたURLでBotを招待
-
-### **Step 3-3: チャンネルID取得**
-
-1. Discordで開発者モードを有効化
-2. 配信先チャンネルを右クリック
-3. 「IDをコピー」
-4. `discord_bot.py` の `TARGET_CHANNEL_ID` に貼り付け
-
-### **Step 3-4: Python環境構築（Windows）**
+**Windows環境（E:\eoi-pl）での設定**:
 
 ```powershell
-# プロジェクトディレクトリへ移動
-cd E:\eoi-pl
+# NSSM ダウンロード
+# https://nssm.cc/download
 
-# 仮想環境作成
-python -m venv venv
-
-# 仮想環境有効化
-.\venv\Scripts\Activate.ps1
-
-# 依存関係インストール
-cd api
-pip install -r requirements.txt
-
-# Discord Bot依存関係インストール
-pip install 'discord.py>=2.3.0' 'httpx>=0.25.0'
-```
-
-### **Step 3-5: Windows Service化（NSSM）**
-
-**NSSM ダウンロード**: https://nssm.cc/download
-
-#### **Python API サービス**
-
-```powershell
-# サービス登録
-nssm install EOI-PL-API "E:\eoi-pl\venv\Scripts\python.exe" "E:\eoi-pl\api\main.py"
-nssm set EOI-PL-API AppDirectory E:\eoi-pl\api
-nssm set EOI-PL-API DisplayName "EOI-PL FastAPI Server"
-nssm set EOI-PL-API Description "地方競馬AI予想APIサーバー"
-nssm set EOI-PL-API Start SERVICE_AUTO_START
-
-# サービス開始
-nssm start EOI-PL-API
-
-# 状態確認
-nssm status EOI-PL-API
-```
-
-#### **Discord Bot サービス**
-
-```powershell
-# サービス登録
+# Discord Botをサービス登録
 nssm install EOI-PL-Discord "E:\eoi-pl\venv\Scripts\python.exe" "E:\eoi-pl\discord_bot.py"
-nssm set EOI-PL-Discord AppDirectory E:\eoi-pl
-nssm set EOI-PL-Discord DisplayName "EOI-PL Discord Bot"
-nssm set EOI-PL-Discord Description "地方競馬AI予想Discord配信Bot"
-nssm set EOI-PL-Discord Start SERVICE_AUTO_START
 
-# サービス開始
+# 環境変数設定
+nssm set EOI-PL-Discord AppEnvironmentExtra ^
+  DISCORD_BOT_TOKEN=あなたのトークン ^
+  DISCORD_CHANNEL_ID=チャンネルID ^
+  API_URL=http://localhost:8000
+
+# 作業ディレクトリ設定
+nssm set EOI-PL-Discord AppDirectory E:\eoi-pl
+
+# ログ設定
+nssm set EOI-PL-Discord AppStdout E:\eoi-pl\logs\discord_bot.log
+nssm set EOI-PL-Discord AppStderr E:\eoi-pl\logs\discord_bot_error.log
+
+# サービス起動
 nssm start EOI-PL-Discord
 
 # 状態確認
@@ -863,95 +865,188 @@ nssm status EOI-PL-Discord
 
 ---
 
+## 🪟 Windows環境セットアップガイド
+
+### **前提条件**
+- ✅ Windows 10/11
+- ✅ PostgreSQL 16 インストール済み
+- ✅ Python 3.12 インストール済み
+- ✅ Git インストール済み
+
+### **Step 1: プロジェクトのダウンロード**
+
+```powershell
+# GitHubからクローン
+cd E:\
+git clone https://github.com/aka209859-max/eoi-pl.git
+cd eoi-pl
+```
+
+### **Step 2: Python環境構築**
+
+```powershell
+cd E:\eoi-pl
+
+# 仮想環境作成
+python -m venv venv
+
+# 仮想環境アクティベート
+.\venv\Scripts\Activate.ps1
+
+# 依存関係インストール
+pip install fastapi uvicorn[standard] psycopg2-binary discord.py httpx
+```
+
+### **Step 3: PostgreSQLデータベース確認**
+
+```powershell
+# 接続テスト
+$env:PGPASSWORD="postgres123"
+psql -h localhost -p 5432 -U postgres -d eoi_pl -c "SELECT COUNT(*) FROM races WHERE kaisai_nen = 2026;"
+```
+
+### **Step 4: Python APIの起動**
+
+```powershell
+cd E:\eoi-pl
+python api\main.py
+
+# ブラウザで確認
+# http://localhost:8000/
+```
+
+### **Step 5: Discord Bot設定**
+
+```powershell
+# 環境変数設定（PowerShellセッション）
+$env:DISCORD_BOT_TOKEN="あなたのDiscord Botトークン"
+$env:DISCORD_CHANNEL_ID="配信先チャンネルID"
+$env:API_URL="http://localhost:8000"
+
+# Bot起動
+python discord_bot.py
+```
+
+### **Step 6: Windows Service化（NSSM）**
+
+**Python APIのサービス化**:
+```powershell
+nssm install EOI-PL-API "E:\eoi-pl\venv\Scripts\python.exe" "E:\eoi-pl\api\main.py"
+nssm set EOI-PL-API AppDirectory E:\eoi-pl\api
+nssm start EOI-PL-API
+```
+
+**Discord Botのサービス化**:
+```powershell
+nssm install EOI-PL-Discord "E:\eoi-pl\venv\Scripts\python.exe" "E:\eoi-pl\discord_bot.py"
+nssm set EOI-PL-Discord AppEnvironmentExtra DISCORD_BOT_TOKEN=トークン DISCORD_CHANNEL_ID=チャンネルID API_URL=http://localhost:8000
+nssm set EOI-PL-Discord AppDirectory E:\eoi-pl
+nssm start EOI-PL-Discord
+```
+
+---
+
 ## ✅ 動作確認チェックリスト
 
+### **Python API**
+- [ ] `http://localhost:8000/api/health` が「healthy」を返す
+- [ ] `http://localhost:8000/api/dates` が日付配列を返す
+- [ ] `http://localhost:8000/api/predictions/20260102` が予想データを返す
+- [ ] PostgreSQL接続が正常（81,884レース以上）
+- [ ] feature_database_2020_2025.json が読み込まれている
+
 ### **Web UI**
-- [ ] http://localhost:8000/ にアクセス
-- [ ] 日付選択ドロップダウンが表示される
-- [ ] 「予想を生成」ボタンをクリック
-- [ ] 全レース・全馬が表示される
-- [ ] 「note用にコピー」でMarkdown形式がコピーされる
-- [ ] 「Discord用にコピー」でDiscord形式がコピーされる
+- [ ] `http://localhost:8000/` でメインページが表示される
+- [ ] 日付選択ドロップダウンが動作する
+- [ ] 「予想を生成」ボタンで全レース表示
+- [ ] 「note用にコピー」ボタンでMarkdown形式コピー
+- [ ] 「Discord用にコピー」ボタンでDiscord形式コピー
 
 ### **Discord Bot**
-- [ ] Botがオンライン状態
-- [ ] `!ヘルプ` コマンドが応答する
-- [ ] `!予想` コマンドで今日の予想が表示される
-- [ ] `!予想 20260102` で指定日の予想が表示される
-- [ ] Embedが正しく表示される
-- [ ] 定時配信（毎朝9:00）が動作する
-
-### **Windows Service**
-- [ ] EOI-PL-API サービスが起動している
-- [ ] EOI-PL-Discord サービスが起動している
-- [ ] PC再起動後も自動起動する
-- [ ] サービスログが正常
+- [ ] Bot起動時に「✅ Discord Bot起動」メッセージ
+- [ ] `!予想` コマンドで当日予想取得
+- [ ] `!予想 20260102` で指定日予想取得
+- [ ] `!health` でシステムヘルスチェック
+- [ ] 毎朝9:00に自動配信（★4以上のみ）
 
 ---
 
 ## 🎯 次のステップ
 
-### **即座に実装**
-1. ✅ Python APIにHTML配信機能を追加
-2. ✅ Frontend JavaScript実装
-3. ✅ note用コピー機能実装
-4. ✅ Discord Bot実装
-5. ✅ 定時配信機能実装
+### **即座に実装可能**
+1. ✅ **Web UI実装** → 30分
+2. ✅ **Discord Bot実装** → 1時間
+3. ✅ **Windows Service化** → 30分
 
-### **テスト**
-1. ⏳ ローカル環境でWeb UI動作確認
-2. ⏳ Discord Bot手動実行テスト
-3. ⏳ 定時配信テスト（時刻変更して確認）
-
-### **本番デプロイ**
-1. ⏳ Windows環境で両サービスを起動
-2. ⏳ 24時間稼働確認
-3. ⏳ エラーログ監視
+### **合計所要時間**
+- **実装**: 2時間
+- **テスト**: 30分
+- **合計**: 2.5時間
 
 ---
 
-## 📚 参考情報
+## 📞 トラブルシューティング
 
-### **ファイル構成**
+### **PostgreSQL接続エラー**
+```powershell
+# PostgreSQLサービス確認
+Get-Service postgresql*
 
-```
-E:\eoi-pl\
-├── api\
-│   ├── main.py              # FastAPI サーバー（HTML配信追加）
-│   ├── requirements.txt     # Python依存関係
-│   └── static\
-│       └── app.js           # Frontend JavaScript
-├── discord_bot.py           # Discord Bot
-├── data\
-│   └── feature_database_2020_2025.json
-├── venv\                    # Python仮想環境
-└── README.md
+# サービス起動
+Start-Service postgresql-x64-16
 ```
 
-### **重要なURL**
+### **Python APIが起動しない**
+```powershell
+# ポート8000の使用確認
+netstat -ano | findstr :8000
 
-- **Web UI**: http://localhost:8000/
-- **API Health**: http://localhost:8000/api/health
-- **API Dates**: http://localhost:8000/api/dates
-- **API Predictions**: http://localhost:8000/api/predictions/20260102
+# プロセスKill
+taskkill /PID <PID> /F
+```
 
-### **Discord コマンド**
-
-- `!予想` - 今日の予想
-- `!予想 20260102` - 指定日の予想
-- `!ヘルプ` - ヘルプ表示
-
-### **PostgreSQL接続情報**
-
-- Host: localhost
-- Port: 5432
-- Database: eoi_pl
-- User: postgres
-- Password: postgres123
+### **Discord Bot接続エラー**
+- トークンの有効性確認
+- チャンネルIDの正確性確認
+- Bot権限確認（メッセージ送信、Embed送信）
 
 ---
 
-**作成者**: Claude (AI Developer)  
-**最終更新**: 2026-02-01  
-**バージョン**: v1.0-Final  
-**ステータス**: ✅ 実装準備完了
+## 📝 重要な注意事項
+
+### **Enable憲法遵守**
+- ✅ **10x Mindset**: 妥協なしの完全版実装
+- ✅ **Play to Win**: ビジネスグレードの品質
+- ✅ **Be Resourceful**: 既存資産（Python API）を最大活用
+
+### **セキュリティ**
+- ⚠️ Discord Botトークンは**絶対に**GitHubにコミットしない
+- ⚠️ PostgreSQLパスワードは環境変数で管理
+- ⚠️ Web UIはlocalhost限定（外部公開しない）
+
+### **データ整合性**
+- ✅ オッズ不使用（`odds_used: false`）
+- ✅ 凍結配信（`freeze: true`）
+- ✅ 全レース・全馬配信
+
+---
+
+## 🏇 CEOへの最終確認
+
+### **実装準備完了**
+- ✅ Python API完全動作
+- ✅ PostgreSQL接続確認済み
+- ✅ feature_database読み込み済み
+- ✅ 実装計画書作成完了
+
+### **次のアクション**
+1. **Web UI実装開始** → 30分
+2. **Discord Bot実装開始** → 1時間
+3. **Windows環境セットアップ** → 30分
+
+**合計: 2時間で完全動作するシステムが完成します。**
+
+---
+
+**© 2026 EOI-PL v1.0-Prime | Enable CEO**  
+**48時間で"勘"を"確信"に変える** 🏇
