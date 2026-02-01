@@ -2,10 +2,11 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   build: {
-    target: 'esnext',
-    minify: true,
+    outDir: 'dist',
+    emptyOutDir: true,
+    minify: false,
     rollupOptions: {
-      input: 'src/index.tsx',
+      input: './src/index.tsx',
       output: {
         entryFileNames: '_worker.js',
         format: 'es'

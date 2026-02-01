@@ -8,81 +8,76 @@ app.use('/api/*', cors())
 
 // 静的ファイル配信（Cloudflare Pagesは自動で /static を配信）
 
+// Python API のベースURL（環境変数から取得、デフォルトはlocalhost）
+const PYTHON_API_URL = typeof process !== 'undefined' && process.env?.PYTHON_API_URL 
+  ? process.env.PYTHON_API_URL 
+  : 'http://localhost:8000'
+
 // =====================================================================
 // API エンドポイント
 // =====================================================================
 
-// 利用可能な日付一覧を取得
+// 利用可能な日付一覧を取得（Python APIへプロキシ）
 app.get('/api/dates', async (c) => {
   try {
-    // TODO: PostgreSQL から日付一覧を取得
-    // 開発中は仮データを返す
-    const dates = [
-      '20251220',
-      '20251221',
-      '20251222',
-      '20251223',
-      '20251224',
-      '20251225',
-      '20251226',
-      '20251227',
-      '20251228',
-      '20251229',
-      '20251230',
-      '20251231'
-    ]
+    const response = await fetch(`${PYTHON_API_URL}/api/dates`)
     
-    return c.json({ dates })
+    if (!response.ok) {
+      throw new Error(`Python API error: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    return c.json(data)
   } catch (error) {
-    return c.json({ error: 'データ取得エラー' }, 500)
+    console.error('API dates error:', error)
+    return c.json({ error: 'データ取得エラー', details: String(error) }, 500)
   }
 })
 
-// 指定日の予想を取得
+// 指定日の予想を取得（Python APIへプロキシ）
 app.get('/api/predictions/:date', async (c) => {
   const date = c.req.param('date')
   
   try {
-    // TODO: PostgreSQL からレース情報を取得して予想を生成
-    // 開発中は仮データを返す
-    const predictions = {
-      date: date,
-      races: [
-        {
-          race_id: `${date}5401`,
-          venue: '高知',
-          race_no: 1,
-          rating: '★★★★★',
-          top_deviation: 72.6,
-          horses: [
-            { rank: 1, umaban: 7, bamei: 'シーザソング', deviation: 72.6 },
-            { rank: 2, umaban: 9, bamei: 'ランギロア', deviation: 54.2 },
-            { rank: 3, umaban: 8, bamei: 'カンタベリービーム', deviation: 53.5 },
-            { rank: 4, umaban: 4, bamei: 'チュラリヴァル', deviation: 51.7 },
-            { rank: 5, umaban: 6, bamei: 'コスモラパウィラ', deviation: 50.8 }
-          ],
-          top3: [7, 9, 8],
-          top5: [7, 9, 8, 4, 6],
-          analysis: '本命が圧倒的で非常に予想しやすいレースです'
-        }
-      ]
+    const response = await fetch(`${PYTHON_API_URL}/api/predictions/${date}`)
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        return c.json({ error: `日付 ${date} のレースが見つかりません` }, 404)
+      }
+      throw new Error(`Python API error: ${response.status}`)
     }
     
-    return c.json(predictions)
+    const data = await response.json()
+    return c.json(data)
   } catch (error) {
-    return c.json({ error: '予想生成エラー' }, 500)
+    console.error('API predictions error:', error)
+    return c.json({ error: '予想生成エラー', details: String(error) }, 500)
   }
 })
 
-// 単一レース予想を取得
-app.get('/api/race/:race_id', async (c) => {
-  const raceId = c.req.param('race_id')
-  
+// ヘルスチェック（Python API接続確認）
+app.get('/api/health', async (c) => {
   try {
-    // TODO: PostgreSQL から単一レースの予想を生成
-    return c.json({ message: `Race ${raceId} prediction` })
+    const response = await fetch(`${PYTHON_API_URL}/api/health`)
+    
+    if (!response.ok) {
+      throw new Error(`Python API error: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    return c.json({
+      status: 'healthy',
+      python_api: data,
+      proxy: 'ok'
+    })
   } catch (error) {
-    return c.json({ error: '予想生成エラー' }, 500)
+    console.error('Health check error:', error)
+    return c.json({ 
+      status: 'unhealthy',
+      error: String(error),
+      python_api_url: PYTHON_API_URL
+    }, 500)
   }
 })
 
@@ -168,4 +163,7 @@ app.get('/', (c) => {
   `)
 })
 
-export default app
+// Cloudflare Workers用のエクスポート
+export default {
+  fetch: app.fetch.bind(app)
+}
