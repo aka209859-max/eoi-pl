@@ -367,8 +367,18 @@ async def root():
             <p class="text-gray-600 mt-2">地方競馬AI予想 v1.0-Prime</p>
         </div>
 
-        <!-- 日付選択 + 予想生成ボタン -->
+        <!-- 更新ボタン + 日付選択 + 予想生成ボタン -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-4">
+                <button id="refreshBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transition">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    最新データを更新
+                </button>
+                <div id="refreshStatus" class="text-sm text-gray-600 hidden">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    更新中...
+                </div>
+            </div>
             <div class="flex flex-col md:flex-row items-center gap-4">
                 <label class="text-lg font-semibold text-gray-700">
                     <i class="far fa-calendar-alt mr-2"></i>
@@ -446,33 +456,30 @@ async def health_check():
 
 @app.get("/api/dates", response_model=DatesResponse)
 async def get_available_dates():
-    """利用可能な日付一覧を取得（当日+翌日）"""
+    """利用可能な日付一覧を取得（データベースから最新10日分）"""
     try:
-        today = datetime.now()
-        tomorrow = today + timedelta(days=1)
-        
-        dates_to_check = [
-            today.strftime("%Y%m%d"),
-            tomorrow.strftime("%Y%m%d")
-        ]
-        
         available_dates = []
         
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        for date_str in dates_to_check:
-            year, month_day = parse_date(date_str)
-            
-            # レース存在確認
-            cursor.execute("""
-                SELECT COUNT(*) FROM races 
-                WHERE kaisai_nen = %s AND kaisai_tsukihi = %s
-            """, (year, month_day))
-            
-            count = cursor.fetchone()[0]
-            if count > 0:
-                available_dates.append(date_str)
+        # データベースから最新10日分の開催日を取得
+        cursor.execute("""
+            SELECT DISTINCT kaisai_nen, kaisai_tsukihi 
+            FROM races 
+            WHERE kaisai_nen = 2026
+            ORDER BY kaisai_tsukihi DESC 
+            LIMIT 10
+        """)
+        
+        dates_data = cursor.fetchall()
+        
+        for year, month_day in dates_data:
+            # YYYYMMDD形式に変換
+            # month_day = 130 → "0130"
+            month_day_str = str(month_day).zfill(4)
+            date_str = f"{year}{month_day_str}"
+            available_dates.append(date_str)
         
         cursor.close()
         conn.close()
@@ -481,6 +488,58 @@ async def get_available_dates():
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"日付取得エラー: {str(e)}")
+
+@app.post("/api/refresh")
+async def refresh_predictions():
+    """
+    最新データを更新して予想を生成
+    
+    処理フロー:
+    1. PostgreSQLから最新の開催日を取得
+    2. その日のレース予想を生成
+    3. 利用可能な日付リストを更新
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # 最新の開催日を取得
+        cursor.execute("""
+            SELECT DISTINCT kaisai_nen, kaisai_tsukihi 
+            FROM races 
+            WHERE kaisai_nen = 2026
+            ORDER BY kaisai_tsukihi DESC 
+            LIMIT 1
+        """)
+        
+        latest_race = cursor.fetchone()
+        
+        if not latest_race:
+            cursor.close()
+            conn.close()
+            return {
+                "success": False,
+                "message": "データベースに2026年のレースが見つかりません"
+            }
+        
+        year, month_day = latest_race
+        
+        # YYYYMMDD形式に変換
+        # month_day = 130 → "0130"
+        month_day_str = str(month_day).zfill(4)
+        latest_date = f"{year}{month_day_str}"
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "message": f"最新データを取得しました: {latest_date}",
+            "latest_date": latest_date
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"更新エラー: {str(e)}")
 
 @app.get("/api/predictions/{date}", response_model=PredictionsResponse)
 async def get_predictions(date: str):

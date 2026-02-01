@@ -46,11 +46,74 @@ async function loadDates() {
 // イベントリスナーの設定
 // =====================================================================
 function setupEventListeners() {
+    // 更新ボタン
+    document.getElementById('refreshBtn').addEventListener('click', refreshData);
+    
     // 予想生成ボタン
     document.getElementById('generateBtn').addEventListener('click', generatePredictions);
     
     // note用コピーボタン
     document.getElementById('copyNoteBtn').addEventListener('click', copyForNote);
+}
+
+// =====================================================================
+// 最新データの更新
+// =====================================================================
+async function refreshData() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const refreshStatus = document.getElementById('refreshStatus');
+    
+    // ボタンを無効化
+    refreshBtn.disabled = true;
+    refreshStatus.classList.remove('hidden');
+    refreshStatus.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>最新データを取得中...';
+    
+    try {
+        const response = await fetch('/api/refresh', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // 成功メッセージ
+            refreshStatus.innerHTML = '<i class="fas fa-check-circle mr-2 text-green-600"></i>' + data.message;
+            
+            // 日付リストを再読み込み
+            await loadDates();
+            
+            // 最新日付を自動選択
+            if (data.latest_date) {
+                const select = document.getElementById('dateSelect');
+                select.value = data.latest_date;
+            }
+            
+            // 3秒後に自動で予想生成
+            setTimeout(() => {
+                generatePredictions();
+            }, 1000);
+            
+        } else {
+            refreshStatus.innerHTML = '<i class="fas fa-exclamation-triangle mr-2 text-yellow-600"></i>' + data.message;
+        }
+        
+    } catch (error) {
+        console.error('更新エラー:', error);
+        refreshStatus.innerHTML = '<i class="fas fa-times-circle mr-2 text-red-600"></i>更新に失敗しました';
+    } finally {
+        // 5秒後にボタンを再度有効化
+        setTimeout(() => {
+            refreshBtn.disabled = false;
+            refreshStatus.classList.add('hidden');
+        }, 5000);
+    }
 }
 
 // =====================================================================
