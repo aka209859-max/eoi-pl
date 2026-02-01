@@ -11,6 +11,8 @@ EOI-PL v1.0-Prime FastAPI Server
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
@@ -67,6 +69,13 @@ FEATURE_DB_PATH = Path(__file__).parent.parent / 'data' / 'feature_database_2020
 
 app = FastAPI(title="EOI-PL API", version="1.0.0")
 
+# 静的ファイルディレクトリの作成
+STATIC_DIR = Path(__file__).parent / 'static'
+STATIC_DIR.mkdir(exist_ok=True)
+
+# 静的ファイル配信
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
 # CORS設定
 app.add_middleware(
     CORSMiddleware,
@@ -95,10 +104,13 @@ class Race(BaseModel):
     horses: List[Horse]
     top3: List[int]
     top5: List[int]
+    sanrenpuku: List[List[int]] = []
+    sanrentan: List[List[int]] = []
     analysis: str
 
 class PredictionsResponse(BaseModel):
     date: str
+    generated_at: str
     races: List[Race]
 
 class DatesResponse(BaseModel):
@@ -186,22 +198,20 @@ class EOIPLPredictor:
         return 0.0
     
     def calculate_track_adaptation(self, ketto: str, track_code: int) -> float:
-        if ketto not in self.feature_db['horses']:
+        """トラック適応度を計算（競馬場別）"""
+        if ketto not in self.feature_db.get('track_adaptation', {}):
             return 0.0
         
-        horse_data = self.feature_db['horses'][ketto]
-        if 'tracks' not in horse_data:
+        track_data = self.feature_db['track_adaptation'][ketto]
+        track_key = str(track_code)
+        track_info = track_data.get(track_key)
+        
+        if track_info is None:
             return 0.0
         
-        tracks = horse_data['tracks']
-        if str(track_code) in tracks:
-            track_data = tracks[str(track_code)]
-            count = track_data.get('count', 0)
-            avg_rank = track_data.get('avg_rank', 10.0)
-            
-            if count >= 2:
-                adaptation = -np.log(max(avg_rank, 1.0))
-                return adaptation * min(count / 5.0, 1.0)
+        if isinstance(track_info, dict):
+            avg_rank = track_info.get('avg_rank', 8.0)
+            return -np.log(max(avg_rank, 1.0))
         
         return 0.0
     
@@ -285,7 +295,31 @@ def get_race_recommendation(top_deviation: float) -> tuple:
     elif top_deviation >= 50:
         return '★☆☆☆☆', '大混戦で予想が難しいレースです'
     else:
-        return '☆☆☆☆☆', '超混戦で要注意のレースです'
+        return '☆☆☆☆☆', '荒れ模様で予想が非常に難しいレースです'
+
+def generate_betting(top_horses: List[int], max_count: int = 9) -> List[List[int]]:
+    """上位馬から買い目を生成（三連複/三連単）"""
+    from itertools import combinations, permutations
+    
+    betting = []
+    
+    if len(top_horses) < 3:
+        return betting
+    
+    # 三連複: 組み合わせ（順序なし）
+    if max_count == 9:
+        for combo in combinations(top_horses[:5], 3):
+            betting.append(list(combo))
+            if len(betting) >= max_count:
+                break
+    # 三連単: 順列（順序あり）
+    else:
+        for perm in permutations(top_horses[:4], 3):
+            betting.append(list(perm))
+            if len(betting) >= max_count:
+                break
+    
+    return betting
 
 def get_db_connection():
     """PostgreSQL接続を取得"""
@@ -309,10 +343,80 @@ def format_date(year: int, month_day: int) -> str:
 # API エンドポイント
 # =====================================================================
 
-@app.get("/", response_model=HealthResponse)
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    """ヘルスチェック（ルート）"""
-    return await health_check()
+    """予想配信センターのメインページ"""
+    return """
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏇 EOI-PL 予想配信センター</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto p-8">
+        <!-- ヘッダー -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-horse-head text-blue-600 mr-3"></i>
+                EOI-PL 予想配信センター
+            </h1>
+            <p class="text-gray-600 mt-2">地方競馬AI予想 v1.0-Prime</p>
+        </div>
+
+        <!-- 日付選択 + 予想生成ボタン -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center gap-4">
+                <label class="text-lg font-semibold text-gray-700">
+                    <i class="far fa-calendar-alt mr-2"></i>
+                    予想日を選択:
+                </label>
+                <select id="dateSelect" class="border-2 border-gray-300 rounded-lg p-3 text-lg flex-1">
+                    <option>読み込み中...</option>
+                </select>
+                <button id="generateBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transition">
+                    <i class="fas fa-magic mr-2"></i>
+                    予想を生成
+                </button>
+            </div>
+        </div>
+
+        <!-- アクションボタン（予想生成後に表示） -->
+        <div id="actionButtons" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
+            <div class="flex flex-col md:flex-row gap-4">
+                <button id="copyNoteBtn" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition">
+                    <i class="fas fa-copy mr-2"></i>
+                    note用にコピー（全レース）
+                </button>
+            </div>
+            <p class="text-sm text-gray-600 mt-2 text-center">
+                <i class="fas fa-info-circle mr-1"></i>
+                Discord用コピーは各レースの個別ボタンをご利用ください（★4以上のみ表示）
+            </p>
+        </div>
+
+        <!-- 予想結果表示エリア -->
+        <div id="predictions" class="space-y-6">
+            <div class="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+                <i class="fas fa-info-circle text-4xl mb-4"></i>
+                <p class="text-lg">日付を選択して「予想を生成」ボタンを押してください</p>
+            </div>
+        </div>
+
+        <!-- フッター -->
+        <div class="mt-8 text-center text-gray-600">
+            <p>&copy; 2026 EOI-PL v1.0-Prime | Enable CEO</p>
+            <p class="text-sm mt-2">的中率: Top3≥1 90.06% | Top5≥3 28.23%</p>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
+    """
 
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
@@ -388,11 +492,12 @@ async def get_predictions(date: str):
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # レース情報取得
+        # レース情報取得（会場83を除外）
         cursor.execute("""
             SELECT race_id, keibajo_code, race_bango, kyori, track_code, tosu
             FROM races
             WHERE kaisai_nen = %s AND kaisai_tsukihi = %s
+              AND keibajo_code != 83
             ORDER BY keibajo_code, race_bango
         """, (year, month_day))
         
@@ -476,6 +581,8 @@ async def get_predictions(date: str):
                 ],
                 'top3': [p['umaban'] for p in predictions[:3]],
                 'top5': [p['umaban'] for p in predictions[:5]],
+                'sanrenpuku': generate_betting([p['umaban'] for p in predictions[:5]], max_count=9),
+                'sanrentan': generate_betting([p['umaban'] for p in predictions[:4]], max_count=12),
                 'analysis': analysis
             }
             
@@ -486,6 +593,7 @@ async def get_predictions(date: str):
         
         return {
             'date': date,
+            'generated_at': datetime.now().isoformat(),
             'races': all_races
         }
     
@@ -500,4 +608,4 @@ async def get_predictions(date: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
