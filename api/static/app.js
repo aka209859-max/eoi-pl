@@ -545,7 +545,7 @@ function copyVenueForDiscord(venue) {
 }
 
 // =====================================================================
-// X用コピー機能（1レースずつ、140文字制限）
+// X用コピー機能（1レースずつ、縦書きフォーマット）
 // =====================================================================
 function copyRaceForTwitter(raceIndex) {
     if (!currentPredictions || !currentPredictions.races[raceIndex]) {
@@ -556,11 +556,15 @@ function copyRaceForTwitter(raceIndex) {
     const race = currentPredictions.races[raceIndex];
     const date = formatDate(currentPredictions.date);
     
-    // パターン3: データ重視型
+    // 修正版フォーマット
     let twitterText = `${date}\n\n`;
     twitterText += `${race.rating}\n`;
-    twitterText += `${race.venue}${race.race_no}R: ${race.top3.join('-')} (${race.top_deviation.toFixed(1)})\n\n`;
-    twitterText += `全${currentPredictions.races.length}レース公開中\n`;
+    twitterText += `${race.venue}${race.race_no}R\n\n`;
+    twitterText += `Top3予想\n`;
+    twitterText += `${race.top3.join('-')}\n\n`;
+    twitterText += `Top5予想\n`;
+    twitterText += `${race.top5.join('-')}\n\n`;
+    twitterText += `偏差値: ${race.top_deviation.toFixed(1)}\n`;
     twitterText += `note→[リンク]`;
     
     navigator.clipboard.writeText(twitterText).then(() => {
