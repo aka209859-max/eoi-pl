@@ -595,7 +595,7 @@ async def get_predictions(date: str):
         
         # レース情報取得（会場83を除外）
         cursor.execute("""
-            SELECT race_id, keibajo_code, race_bango, kyori, track_code, tosu
+            SELECT race_id, keibajo_code, race_bango, kyori, track_code
             FROM races
             WHERE kaisai_nen = %s AND kaisai_tsukihi = %s
               AND keibajo_code != 83
@@ -612,7 +612,7 @@ async def get_predictions(date: str):
         all_races = []
         
         for race_row in races_data:
-            race_id, keibajo_code, race_bango, kyori, track_code, tosu = race_row
+            race_id, keibajo_code, race_bango, kyori, track_code = race_row
             
             # エントリー情報取得
             cursor.execute("""
