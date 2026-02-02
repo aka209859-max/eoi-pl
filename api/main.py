@@ -27,26 +27,70 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # =====================================================================
-# 設定
+# 設定（環境自動検出）
 # =====================================================================
 
-DB_CONFIG = {
-    'host': 'localhost',
-    'port': 5432,
-    'database': 'eoi_pl',
-    'user': 'postgres',
-    'password': 'postgres123'
-}
+# Windows PC用の設定ファイルを優先的に読み込む
+# 環境変数 EOI_CONFIG=windows が設定されている場合、またはconfig_windows.pyが存在する場合はそちらを使用
+def load_config():
+    """設定ファイルを環境に応じて自動検出"""
+    config_windows_path = Path(__file__).parent / 'config_windows.py'
+    
+    # 1. 環境変数チェック
+    if os.environ.get('EOI_CONFIG') == 'windows':
+        print(f"[INFO] 環境変数 EOI_CONFIG=windows を検出")
+        if config_windows_path.exists():
+            print(f"[INFO] Windows用設定ファイルを使用: {config_windows_path}")
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("config_windows", config_windows_path)
+            config = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(config)
+            return config
+    
+    # 2. config_windows.py の存在チェック
+    if config_windows_path.exists():
+        print(f"[INFO] Windows用設定ファイルを検出: {config_windows_path}")
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("config_windows", config_windows_path)
+        config = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(config)
+        return config
+    
+    # 3. デフォルト設定（サンドボックス用）
+    print(f"[INFO] デフォルト設定を使用（サンドボックス環境）")
+    return None
 
-WEIGHTS = {
-    'avg_rank': 0.30, 'jockey': 0.15, 'trainer': 0.10,
-    'corner': 0.15, 'time': 0.15, 'distance': 0.10, 'track': 0.05
-}
+# 設定を読み込み
+config_module = load_config()
 
-VENUE_NAMES = {
-    30: '門別', 35: '盛岡', 36: '水沢', 42: '浦和', 43: '船橋', 44: '大井', 45: '川崎',
-    46: '金沢', 47: '笠松', 48: '名古屋', 50: '園田', 51: '姫路', 54: '高知', 55: '佐賀'
-}
+if config_module:
+    DB_CONFIG = config_module.DB_CONFIG
+    WEIGHTS = config_module.WEIGHTS
+    VENUE_NAMES = config_module.VENUE_NAMES
+    FEATURE_DB_PATH = Path(config_module.FEATURE_DB_PATH)
+    print(f"[INFO] DB接続先: {DB_CONFIG['database']}@{DB_CONFIG['host']}")
+    print(f"[INFO] 特徴量DB: {FEATURE_DB_PATH}")
+else:
+    # デフォルト設定（サンドボックス用）
+    DB_CONFIG = {
+        'host': 'localhost',
+        'port': 5432,
+        'database': 'eoi_pl',
+        'user': 'postgres',
+        'password': 'postgres123'
+    }
+    
+    WEIGHTS = {
+        'avg_rank': 0.30, 'jockey': 0.15, 'trainer': 0.10,
+        'corner': 0.15, 'time': 0.15, 'distance': 0.10, 'track': 0.05
+    }
+    
+    VENUE_NAMES = {
+        30: '門別', 35: '盛岡', 36: '水沢', 42: '浦和', 43: '船橋', 44: '大井', 45: '川崎',
+        46: '金沢', 47: '笠松', 48: '名古屋', 50: '園田', 51: '姫路', 54: '高知', 55: '佐賀'
+    }
+    
+    FEATURE_DB_PATH = Path(__file__).parent.parent / 'data' / 'feature_database_2020_2025.json'
 
 DISTANCE_BENCHMARKS = {
     800: (492.0, 13.9), 820: (510.6, 7.4), 850: (516.1, 8.9),
@@ -59,9 +103,6 @@ DISTANCE_BENCHMARKS = {
     2100: (2167.2, 25.9), 2200: (2279.0, 24.2), 2400: (2377.9, 55.9),
     2500: (2475.4, 30.8), 2600: (2505.0, 21.3),
 }
-
-# feature_database_2020_2025.json のパス
-FEATURE_DB_PATH = Path(__file__).parent.parent / 'data' / 'feature_database_2020_2025.json'
 
 # =====================================================================
 # FastAPI アプリケーション
