@@ -16,13 +16,13 @@ Windows PC上でWeb UIを動かす場合の設定ファイル
 # Windows PC用 PostgreSQL設定
 # =====================================================================
 
-# Windows PC のローカル PostgreSQL（eoi-sike）への接続設定
+# Windows PC のローカル PostgreSQL（pckeiba）への接続設定
 DB_CONFIG = {
     'host': '127.0.0.1',      # ローカルホスト
     'port': 5432,              # PostgreSQL標準ポート
-    'database': 'eoi-sike',   # ← UmaConn設定画面で確認したデータベース名
+    'database': 'pckeiba',    # ← UmaConn設定画面で確認したデータベース名
     'user': 'postgres',        # PostgreSQLユーザー
-    'password': 'uwwlqzxqd125'  # ← UmaConn設定画面で確認したパスワード
+    'password': 'postgres123'  # ← UmaConn設定画面で確認したパスワード
 }
 
 # 特徴量データベースのパス（Windows PC用）
