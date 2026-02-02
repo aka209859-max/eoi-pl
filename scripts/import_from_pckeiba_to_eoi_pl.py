@@ -105,6 +105,7 @@ def import_races():
         cur_eoi.executemany("""
             INSERT INTO entries (race_id, umaban, bamei, ketto_toroku_bango, kishu_code, chokyoshi_code, kakutei_chakujun, soha_time)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (race_id, umaban) DO NOTHING
         """, entries_data)
         conn_eoi.commit()
         print(f"✅ {cur_eoi.rowcount:,}件の出走馬データを挿入")
