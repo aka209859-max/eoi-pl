@@ -342,12 +342,16 @@ function displayPredictions(data) {
                         <p class="text-gray-700"><i class="fas fa-comment-dots mr-2"></i>${race.analysis}</p>
                     </div>
                     
-                    <!-- Discord個別コピーボタン（★4以上のみ表示） -->
+                    <!-- コピーボタン（★4以上のみ表示） -->
                     ${(race.rating === '★★★★★' || race.rating === '★★★★☆') ? `
-                        <div class="mt-4">
-                            <button onclick="copyRaceForDiscord(${globalIndex})" class="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition">
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <button onclick="copyRaceForTwitter(${globalIndex})" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg shadow-lg transition">
+                                <i class="fab fa-twitter mr-2"></i>
+                                X用にコピー
+                            </button>
+                            <button onclick="copyRaceForDiscord(${globalIndex})" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition">
                                 <i class="fab fa-discord mr-2"></i>
-                                このレースをDiscordにコピー
+                                Discord用にコピー
                             </button>
                         </div>
                     ` : ''}
@@ -534,6 +538,33 @@ function copyVenueForDiscord(venue) {
     
     navigator.clipboard.writeText(discordText).then(() => {
         alert(`✅ ${venue}のDiscord用テキストをクリップボードにコピーしました！\n（★4以上 ${highRatedRaces.length}レース）`);
+    }).catch(err => {
+        console.error('コピーエラー:', err);
+        alert('❌ コピーに失敗しました');
+    });
+}
+
+// =====================================================================
+// X用コピー機能（1レースずつ、140文字制限）
+// =====================================================================
+function copyRaceForTwitter(raceIndex) {
+    if (!currentPredictions || !currentPredictions.races[raceIndex]) {
+        alert('予想データがありません');
+        return;
+    }
+    
+    const race = currentPredictions.races[raceIndex];
+    const date = formatDate(currentPredictions.date);
+    
+    // パターン3: データ重視型
+    let twitterText = `${date}\n\n`;
+    twitterText += `${race.rating}\n`;
+    twitterText += `${race.venue}${race.race_no}R: ${race.top3.join('-')} (${race.top_deviation.toFixed(1)})\n\n`;
+    twitterText += `全${currentPredictions.races.length}レース公開中\n`;
+    twitterText += `note→[リンク]`;
+    
+    navigator.clipboard.writeText(twitterText).then(() => {
+        alert(`✅ X用テキストをクリップボードにコピーしました！\n【${race.venue} ${race.race_no}R】${race.rating}\n（${twitterText.length}文字）`);
     }).catch(err => {
         console.error('コピーエラー:', err);
         alert('❌ コピーに失敗しました');
