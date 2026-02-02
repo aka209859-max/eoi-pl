@@ -4,12 +4,12 @@ EOI-PL v1.0-Prime Windows PC用 データベース設定
 Windows PC上でWeb UIを動かす場合の設定ファイル
 
 使用方法:
-1. E:\eoi-pl\api\config_windows.py として保存
+1. E:\\eoi-pl\\api\\config_windows.py として保存
 2. start_api_windows.bat で自動的に読み込まれる
 3. Windows PC の PostgreSQL eoi-sike に接続
 
 作成日: 2026-02-01
-最終更新: 2026-02-01
+最終更新: 2026-02-02
 """
 
 # =====================================================================
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     else:
         print(f"❌ ファイル未検出: {FEATURE_DB_PATH}")
         print("\n対処法:")
-        print("1. E:\eoi-pl\data\feature_database_2020_2025.json が存在するか確認")
+        print(r"1. E:\eoi-pl\data\feature_database_2020_2025.json が存在するか確認")
         print("2. git pull origin main で最新版を取得")
     
     print("\n" + "=" * 60)
