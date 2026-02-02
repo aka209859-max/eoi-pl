@@ -91,7 +91,7 @@ def import_races():
                 kishu_code as kishu_code,
                 chokyoshi_code as chokyoshi_code,
                 CASE WHEN kakutei_chakujun ~ '^[0-9]+$' THEN kakutei_chakujun::INTEGER ELSE NULL END as kakutei_chakujun,
-                CASE WHEN soha_time ~ '^[0-9]+$' THEN soha_time::FLOAT / 10 ELSE NULL END as time_seconds
+                CASE WHEN soha_time ~ '^[0-9]+$' THEN soha_time::FLOAT / 10 ELSE NULL END as soha_time
             FROM nvd_se
             WHERE kaisai_nen::INTEGER >= 2020 AND kaisai_nen::INTEGER <= 2026
             ORDER BY kaisai_nen, kaisai_tsukihi, keibajo_code, race_bango, umaban
@@ -103,7 +103,7 @@ def import_races():
         # entries テーブルに挿入
         print("\n7. eoi_pl の entries テーブルに挿入中...")
         cur_eoi.executemany("""
-            INSERT INTO entries (race_id, umaban, bamei, ketto_toroku_bango, kishu_code, chokyoshi_code, kakutei_chakujun, time_seconds)
+            INSERT INTO entries (race_id, umaban, bamei, ketto_toroku_bango, kishu_code, chokyoshi_code, kakutei_chakujun, soha_time)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """, entries_data)
         conn_eoi.commit()
