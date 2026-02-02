@@ -81,9 +81,9 @@ start /B timeout /t 5 /nobreak >nul && start http://localhost:8001
 REM 環境変数を設定（Windows用設定ファイルを使用）
 set EOI_CONFIG=windows
 
-REM FastAPI サーバーを起動
+REM FastAPI サーバーを起動（デバッグログ有効化）
 echo [INFO] API サーバーを起動中...
-python -m uvicorn api.main:app --host 0.0.0.0 --port 8001 --reload
+python -m uvicorn api.main:app --host 0.0.0.0 --port 8001 --reload --log-level debug
 
 echo.
 echo [INFO] Web UI が終了しました。
