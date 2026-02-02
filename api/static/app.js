@@ -3,6 +3,7 @@
 // =====================================================================
 
 let currentPredictions = null;
+let currentVenue = 'all'; // 現在選択中の競馬場
 
 // DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -140,6 +141,7 @@ async function generatePredictions() {
         const data = await response.json();
         
         currentPredictions = data;
+        currentVenue = 'all'; // リセット
         displayPredictions(data);
         
         // アクションボタンを表示
@@ -151,92 +153,180 @@ async function generatePredictions() {
 }
 
 // =====================================================================
-// 予想結果の表示
+// 競馬場別にグループ化
+// =====================================================================
+function groupByVenue(races) {
+    const grouped = {};
+    
+    races.forEach(race => {
+        if (!grouped[race.venue]) {
+            grouped[race.venue] = [];
+        }
+        grouped[race.venue].push(race);
+    });
+    
+    return grouped;
+}
+
+// =====================================================================
+// 競馬場タブの切り替え
+// =====================================================================
+function switchVenue(venue) {
+    currentVenue = venue;
+    displayPredictions(currentPredictions);
+}
+
+// =====================================================================
+// 予想結果の表示（競馬場別タブ対応）
 // =====================================================================
 function displayPredictions(data) {
     const predictionsDiv = document.getElementById('predictions');
     
+    // 競馬場別にグループ化
+    const groupedRaces = groupByVenue(data.races);
+    const venues = Object.keys(groupedRaces).sort();
+    
+    // ヘッダー
     let html = `
         <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-lg p-6 mb-6">
             <h2 class="text-2xl font-bold">📅 ${formatDate(data.date)} の予想</h2>
             <p class="mt-2">生成日時: ${new Date(data.generated_at).toLocaleString('ja-JP')}</p>
-            <p class="mt-1">レース数: ${data.races.length}レース</p>
+            <p class="mt-1">レース数: ${data.races.length}レース | 競馬場数: ${venues.length}</p>
         </div>
     `;
     
-    data.races.forEach((race, index) => {
+    // 競馬場タブ
+    html += `
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+            <div class="flex flex-wrap gap-2">
+                <button 
+                    onclick="switchVenue('all')" 
+                    class="px-6 py-3 rounded-lg font-bold transition ${currentVenue === 'all' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+                    <i class="fas fa-th-large mr-2"></i>全競馬場 (${data.races.length})
+                </button>
+                ${venues.map(venue => `
+                    <button 
+                        onclick="switchVenue('${venue}')" 
+                        class="px-6 py-3 rounded-lg font-bold transition ${currentVenue === venue ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+                        🏇 ${venue} (${groupedRaces[venue].length})
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    // レース表示
+    const racesToDisplay = currentVenue === 'all' ? data.races : groupedRaces[currentVenue];
+    
+    if (!racesToDisplay || racesToDisplay.length === 0) {
         html += `
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <!-- レースヘッダー -->
-                <div class="flex items-center justify-between mb-4 pb-4 border-b-2 border-gray-200">
-                    <h3 class="text-xl font-bold text-gray-800">
-                        【${race.venue} ${race.race_no}R】
-                    </h3>
-                    <div class="flex items-center gap-4">
-                        <span class="text-2xl">${race.rating}</span>
-                        <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-bold">
-                            偏差値Top: ${race.top_deviation.toFixed(1)}
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- 推奨情報 -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <p class="text-sm text-gray-600 mb-1">Top3予想</p>
-                        <p class="text-2xl font-bold text-yellow-700">${race.top3.join('-')}</p>
-                    </div>
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <p class="text-sm text-gray-600 mb-1">Top5予想</p>
-                        <p class="text-xl font-bold text-green-700">${race.top5.join('-')}</p>
-                    </div>
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p class="text-sm text-gray-600 mb-1">三連複</p>
-                        <p class="text-sm font-mono text-blue-700">${formatBetting(race.sanrenpuku)}</p>
-                    </div>
-                </div>
-                
-                <!-- 全馬情報 -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-4 py-2 text-left">順位</th>
-                                <th class="px-4 py-2 text-center">馬番</th>
-                                <th class="px-4 py-2 text-left">馬名</th>
-                                <th class="px-4 py-2 text-right">偏差値</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${race.horses.map(horse => `
-                                <tr class="border-b hover:bg-gray-50 ${horse.rank <= 3 ? 'bg-yellow-50' : ''}">
-                                    <td class="px-4 py-2 font-bold">${horse.rank}</td>
-                                    <td class="px-4 py-2 text-center font-bold text-blue-600">${horse.umaban}</td>
-                                    <td class="px-4 py-2">${horse.bamei}</td>
-                                    <td class="px-4 py-2 text-right font-mono">${horse.deviation.toFixed(1)}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- 分析コメント -->
-                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <p class="text-gray-700"><i class="fas fa-comment-dots mr-2"></i>${race.analysis}</p>
-                </div>
-                
-                <!-- Discord個別コピーボタン（★4以上のみ表示） -->
-                ${(race.rating === '★★★★★' || race.rating === '★★★★☆') ? `
-                    <div class="mt-4">
-                        <button onclick="copyRaceForDiscord(${index})" class="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition">
-                            <i class="fab fa-discord mr-2"></i>
-                            このレースをDiscordにコピー
-                        </button>
-                    </div>
-                ` : ''}
+            <div class="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+                <i class="fas fa-info-circle text-4xl mb-4"></i>
+                <p class="text-lg">この競馬場のレースはありません</p>
             </div>
         `;
-    });
+    } else {
+        // 競馬場ごとのサマリー（全競馬場表示時のみ）
+        if (currentVenue === 'all') {
+            html += `
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-xl font-bold mb-4"><i class="fas fa-chart-bar mr-2"></i>競馬場別サマリー</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        ${venues.map(venue => {
+                            const venueRaces = groupedRaces[venue];
+                            const star5 = venueRaces.filter(r => r.rating === '★★★★★').length;
+                            const star4 = venueRaces.filter(r => r.rating === '★★★★☆').length;
+                            return `
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition cursor-pointer" onclick="switchVenue('${venue}')">
+                                    <h4 class="font-bold text-lg mb-2">🏇 ${venue}</h4>
+                                    <p class="text-sm text-gray-600">全${venueRaces.length}R</p>
+                                    <p class="text-sm text-yellow-600">★5: ${star5}R | ★4: ${star4}R</p>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 各レース詳細
+        racesToDisplay.forEach((race, index) => {
+            // 全レース表示時はインデックスを保持、競馬場別表示時は検索
+            const globalIndex = currentVenue === 'all' ? index : data.races.findIndex(r => r.race_id === race.race_id);
+            
+            html += `
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <!-- レースヘッダー -->
+                    <div class="flex items-center justify-between mb-4 pb-4 border-b-2 border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-800">
+                            【${race.venue} ${race.race_no}R】
+                        </h3>
+                        <div class="flex items-center gap-4">
+                            <span class="text-2xl">${race.rating}</span>
+                            <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-bold">
+                                偏差値Top: ${race.top_deviation.toFixed(1)}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 推奨情報 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 mb-1">Top3予想</p>
+                            <p class="text-2xl font-bold text-yellow-700">${race.top3.join('-')}</p>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 mb-1">Top5予想</p>
+                            <p class="text-xl font-bold text-green-700">${race.top5.join('-')}</p>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 mb-1">三連複</p>
+                            <p class="text-sm font-mono text-blue-700">${formatBetting(race.sanrenpuku)}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 全馬情報 -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left">順位</th>
+                                    <th class="px-4 py-2 text-center">馬番</th>
+                                    <th class="px-4 py-2 text-left">馬名</th>
+                                    <th class="px-4 py-2 text-right">偏差値</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${race.horses.map(horse => `
+                                    <tr class="border-b hover:bg-gray-50 ${horse.rank <= 3 ? 'bg-yellow-50' : ''}">
+                                        <td class="px-4 py-2 font-bold">${horse.rank}</td>
+                                        <td class="px-4 py-2 text-center font-bold text-blue-600">${horse.umaban}</td>
+                                        <td class="px-4 py-2">${horse.bamei}</td>
+                                        <td class="px-4 py-2 text-right font-mono">${horse.deviation.toFixed(1)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 分析コメント -->
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <p class="text-gray-700"><i class="fas fa-comment-dots mr-2"></i>${race.analysis}</p>
+                    </div>
+                    
+                    <!-- Discord個別コピーボタン（★4以上のみ表示） -->
+                    ${(race.rating === '★★★★★' || race.rating === '★★★★☆') ? `
+                        <div class="mt-4">
+                            <button onclick="copyRaceForDiscord(${globalIndex})" class="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition">
+                                <i class="fab fa-discord mr-2"></i>
+                                このレースをDiscordにコピー
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+    }
     
     predictionsDiv.innerHTML = html;
 }
