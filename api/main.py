@@ -435,20 +435,6 @@ async def root():
             </div>
         </div>
 
-        <!-- アクションボタン（予想生成後に表示） -->
-        <div id="actionButtons" class="bg-white rounded-lg shadow-md p-6 mb-6 hidden">
-            <div class="flex flex-col md:flex-row gap-4">
-                <button id="copyNoteBtn" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition">
-                    <i class="fas fa-copy mr-2"></i>
-                    note用にコピー（全レース）
-                </button>
-            </div>
-            <p class="text-sm text-gray-600 mt-2 text-center">
-                <i class="fas fa-info-circle mr-1"></i>
-                Discord用コピーは各レースの個別ボタンをご利用ください（★4以上のみ表示）
-            </p>
-        </div>
-
         <!-- 予想結果表示エリア -->
         <div id="predictions" class="space-y-6">
             <div class="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">

@@ -52,9 +52,6 @@ function setupEventListeners() {
     
     // 予想生成ボタン
     document.getElementById('generateBtn').addEventListener('click', generatePredictions);
-    
-    // note用コピーボタン
-    document.getElementById('copyNoteBtn').addEventListener('click', copyForNote);
 }
 
 // =====================================================================
@@ -143,9 +140,6 @@ async function generatePredictions() {
         currentPredictions = data;
         currentVenue = 'all'; // リセット
         displayPredictions(data);
-        
-        // アクションボタンを表示
-        document.getElementById('actionButtons').classList.remove('hidden');
     } catch (error) {
         console.error('予想生成エラー:', error);
         predictionsDiv.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"><strong>エラー:</strong> ${error.message}</div>`;
@@ -195,22 +189,56 @@ function displayPredictions(data) {
         </div>
     `;
     
-    // 競馬場タブ
+    // 競馬場タブ + コピーボタン
     html += `
         <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-            <div class="flex flex-wrap gap-2">
-                <button 
-                    onclick="switchVenue('all')" 
-                    class="px-6 py-3 rounded-lg font-bold transition ${currentVenue === 'all' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
-                    <i class="fas fa-th-large mr-2"></i>全競馬場 (${data.races.length})
-                </button>
-                ${venues.map(venue => `
+            <div class="flex flex-col gap-4">
+                <!-- タブ -->
+                <div class="flex flex-wrap gap-2">
                     <button 
-                        onclick="switchVenue('${venue}')" 
-                        class="px-6 py-3 rounded-lg font-bold transition ${currentVenue === venue ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
-                        🏇 ${venue} (${groupedRaces[venue].length})
+                        onclick="switchVenue('all')" 
+                        class="px-6 py-3 rounded-lg font-bold transition ${currentVenue === 'all' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+                        <i class="fas fa-th-large mr-2"></i>全競馬場 (${data.races.length})
                     </button>
-                `).join('')}
+                    ${venues.map(venue => `
+                        <button 
+                            onclick="switchVenue('${venue}')" 
+                            class="px-6 py-3 rounded-lg font-bold transition ${currentVenue === venue ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+                            🏇 ${venue} (${groupedRaces[venue].length})
+                        </button>
+                    `).join('')}
+                </div>
+                
+                <!-- コピーボタン（現在表示中の競馬場用） -->
+                <div class="flex flex-wrap gap-2">
+                    ${currentVenue === 'all' ? `
+                        <button 
+                            onclick="copyForNote()" 
+                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition">
+                            <i class="fas fa-copy mr-2"></i>
+                            全競馬場をnote用にコピー
+                        </button>
+                        <button 
+                            onclick="copyAllForDiscord()" 
+                            class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition">
+                            <i class="fab fa-discord mr-2"></i>
+                            全競馬場をDiscord用にコピー（★4以上のみ）
+                        </button>
+                    ` : `
+                        <button 
+                            onclick="copyVenueForNote('${currentVenue}')" 
+                            class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transition">
+                            <i class="fas fa-copy mr-2"></i>
+                            ${currentVenue}のレースをnote用にコピー
+                        </button>
+                        <button 
+                            onclick="copyVenueForDiscord('${currentVenue}')" 
+                            class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-lg transition">
+                            <i class="fab fa-discord mr-2"></i>
+                            ${currentVenue}のレースをDiscord用にコピー（★4以上のみ）
+                        </button>
+                    `}
+                </div>
             </div>
         </div>
     `;
@@ -364,6 +392,148 @@ function copyForNote() {
     
     navigator.clipboard.writeText(noteText).then(() => {
         alert('✅ note記事用テキストをクリップボードにコピーしました！');
+    }).catch(err => {
+        console.error('コピーエラー:', err);
+        alert('❌ コピーに失敗しました');
+    });
+}
+
+// =====================================================================
+// 競馬場別 note用コピー機能
+// =====================================================================
+function copyVenueForNote(venue) {
+    if (!currentPredictions) {
+        alert('予想データがありません');
+        return;
+    }
+    
+    const venueRaces = currentPredictions.races.filter(r => r.venue === venue);
+    
+    if (venueRaces.length === 0) {
+        alert('この競馬場のレースがありません');
+        return;
+    }
+    
+    let noteText = `# 🏇 ${formatDate(currentPredictions.date)} ${venue} AI予想\n\n`;
+    noteText += `**生成日時**: ${new Date(currentPredictions.generated_at).toLocaleString('ja-JP')}\n`;
+    noteText += `**レース数**: ${venueRaces.length}R\n\n`;
+    noteText += `---\n\n`;
+    
+    venueRaces.forEach(race => {
+        noteText += `## 【${race.venue} ${race.race_no}R】${race.rating}\n\n`;
+        noteText += `**1位偏差値**: ${race.top_deviation.toFixed(1)}\n`;
+        noteText += `**Top3予想**: ${race.top3.join('-')}\n`;
+        noteText += `**Top5予想**: ${race.top5.join('-')}\n\n`;
+        
+        noteText += `### 全馬順位\n\n`;
+        race.horses.forEach(h => {
+            noteText += `${h.rank}. ${h.umaban}番 **${h.bamei}** (偏差値: ${h.deviation.toFixed(1)})\n`;
+        });
+        
+        noteText += `\n**分析**: ${race.analysis}\n\n`;
+        noteText += `---\n\n`;
+    });
+    
+    noteText += `\n*的中率: Top3≥1 90.06% | Top5≥3 28.23%*\n`;
+    noteText += `*© 2026 EOI-PL v1.0-Prime | Enable CEO*\n`;
+    
+    navigator.clipboard.writeText(noteText).then(() => {
+        alert(`✅ ${venue}のnote記事用テキストをクリップボードにコピーしました！\n（${venueRaces.length}レース）`);
+    }).catch(err => {
+        console.error('コピーエラー:', err);
+        alert('❌ コピーに失敗しました');
+    });
+}
+
+// =====================================================================
+// 全競馬場 Discord用コピー機能（★4以上のみ）
+// =====================================================================
+function copyAllForDiscord() {
+    if (!currentPredictions) {
+        alert('予想データがありません');
+        return;
+    }
+    
+    const highRatedRaces = currentPredictions.races.filter(r => 
+        r.rating === '★★★★★' || r.rating === '★★★★☆'
+    );
+    
+    if (highRatedRaces.length === 0) {
+        alert('★4以上のレースがありません');
+        return;
+    }
+    
+    let discordText = `**🏇 ${formatDate(currentPredictions.date)} 地方競馬AI予想（厳選${highRatedRaces.length}レース）**\n\n`;
+    
+    highRatedRaces.forEach((race, index) => {
+        discordText += `**【${race.venue} ${race.race_no}R】${race.rating}**\n`;
+        discordText += `偏差値Top: ${race.top_deviation.toFixed(1)} | 予想: ${race.top3.join('-')}\n`;
+        discordText += `推奨買い目: ${race.top5.join('-')}\n`;
+        
+        // 上位3頭
+        race.horses.slice(0, 3).forEach(h => {
+            discordText += `${h.rank}位: ${h.umaban}番 ${h.bamei} (${h.deviation.toFixed(1)})\n`;
+        });
+        
+        discordText += `${race.analysis}\n`;
+        
+        if (index < highRatedRaces.length - 1) {
+            discordText += `\n---\n\n`;
+        }
+    });
+    
+    discordText += `\n\n*的中率: Top3≥1 90.06% | Top5≥3 28.23%*`;
+    
+    navigator.clipboard.writeText(discordText).then(() => {
+        alert(`✅ Discord用テキストをクリップボードにコピーしました！\n（★4以上 ${highRatedRaces.length}レース）`);
+    }).catch(err => {
+        console.error('コピーエラー:', err);
+        alert('❌ コピーに失敗しました');
+    });
+}
+
+// =====================================================================
+// 競馬場別 Discord用コピー機能（★4以上のみ）
+// =====================================================================
+function copyVenueForDiscord(venue) {
+    if (!currentPredictions) {
+        alert('予想データがありません');
+        return;
+    }
+    
+    const venueRaces = currentPredictions.races.filter(r => r.venue === venue);
+    const highRatedRaces = venueRaces.filter(r => 
+        r.rating === '★★★★★' || r.rating === '★★★★☆'
+    );
+    
+    if (highRatedRaces.length === 0) {
+        alert(`${venue}には★4以上のレースがありません`);
+        return;
+    }
+    
+    let discordText = `**🏇 ${formatDate(currentPredictions.date)} ${venue} AI予想（厳選${highRatedRaces.length}レース）**\n\n`;
+    
+    highRatedRaces.forEach((race, index) => {
+        discordText += `**【${race.race_no}R】${race.rating}**\n`;
+        discordText += `偏差値Top: ${race.top_deviation.toFixed(1)} | 予想: ${race.top3.join('-')}\n`;
+        discordText += `推奨買い目: ${race.top5.join('-')}\n`;
+        
+        // 上位3頭
+        race.horses.slice(0, 3).forEach(h => {
+            discordText += `${h.rank}位: ${h.umaban}番 ${h.bamei} (${h.deviation.toFixed(1)})\n`;
+        });
+        
+        discordText += `${race.analysis}\n`;
+        
+        if (index < highRatedRaces.length - 1) {
+            discordText += `\n---\n\n`;
+        }
+    });
+    
+    discordText += `\n\n*的中率: Top3≥1 90.06% | Top5≥3 28.23%*`;
+    
+    navigator.clipboard.writeText(discordText).then(() => {
+        alert(`✅ ${venue}のDiscord用テキストをクリップボードにコピーしました！\n（★4以上 ${highRatedRaces.length}レース）`);
     }).catch(err => {
         console.error('コピーエラー:', err);
         alert('❌ コピーに失敗しました');
