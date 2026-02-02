@@ -55,16 +55,16 @@ def import_races():
         print("\n4. pckeiba から NAR レースデータを取得中...")
         cur_pckeiba.execute("""
             SELECT 
-                年 || LPAD(月日::TEXT, 4, '0') || LPAD(場コード::TEXT, 2, '0') || LPAD(Ｒ::TEXT, 2, '0') as race_id,
-                年 as kaisai_nen,
-                月日 as kaisai_tsukihi,
-                場コード as keibajo_code,
-                Ｒ as race_bango,
-                距離 as kyori,
-                トラックコード as track_code
+                kaisai_nen || LPAD(kaisai_tsukihi, 4, '0') || LPAD(keibajo_code, 2, '0') || LPAD(race_bango, 2, '0') as race_id,
+                kaisai_nen::INTEGER as kaisai_nen,
+                kaisai_tsukihi::INTEGER as kaisai_tsukihi,
+                keibajo_code::INTEGER as keibajo_code,
+                race_bango::INTEGER as race_bango,
+                CASE WHEN kyori ~ '^[0-9]+$' THEN kyori::INTEGER ELSE NULL END as kyori,
+                CASE WHEN track_code ~ '^[0-9]+$' THEN track_code::INTEGER ELSE NULL END as track_code
             FROM nvd_ra
-            WHERE 年 >= 2020 AND 年 <= 2026
-            ORDER BY 年, 月日, 場コード, Ｒ
+            WHERE kaisai_nen::INTEGER >= 2020 AND kaisai_nen::INTEGER <= 2026
+            ORDER BY kaisai_nen, kaisai_tsukihi, keibajo_code, race_bango
         """)
         
         races_data = cur_pckeiba.fetchall()
@@ -84,17 +84,17 @@ def import_races():
         print("\n6. pckeiba から NAR 出走馬データを取得中...")
         cur_pckeiba.execute("""
             SELECT 
-                年 || LPAD(月日::TEXT, 4, '0') || LPAD(場コード::TEXT, 2, '0') || LPAD(Ｒ::TEXT, 2, '0') as race_id,
-                馬番 as umaban,
-                馬名 as bamei,
-                血統登録番号 as ketto_toroku_bango,
-                騎手コード as kishu_code,
-                調教師コード as chokyoshi_code,
-                CASE WHEN 確定着順 ~ '^[0-9]+$' THEN 確定着順::INTEGER ELSE NULL END as kakutei_chakujun,
-                タイム_秒 as time_seconds
+                kaisai_nen || LPAD(kaisai_tsukihi, 4, '0') || LPAD(keibajo_code, 2, '0') || LPAD(race_bango, 2, '0') as race_id,
+                CASE WHEN umaban ~ '^[0-9]+$' THEN umaban::INTEGER ELSE NULL END as umaban,
+                bamei as bamei,
+                ketto_toroku_bango as ketto_toroku_bango,
+                kishu_code as kishu_code,
+                chokyoshi_code as chokyoshi_code,
+                CASE WHEN kakutei_chakujun ~ '^[0-9]+$' THEN kakutei_chakujun::INTEGER ELSE NULL END as kakutei_chakujun,
+                CASE WHEN soha_time ~ '^[0-9]+$' THEN soha_time::FLOAT / 10 ELSE NULL END as time_seconds
             FROM nvd_se
-            WHERE 年 >= 2020 AND 年 <= 2026
-            ORDER BY 年, 月日, 場コード, Ｒ, 馬番
+            WHERE kaisai_nen::INTEGER >= 2020 AND kaisai_nen::INTEGER <= 2026
+            ORDER BY kaisai_nen, kaisai_tsukihi, keibajo_code, race_bango, umaban
         """)
         
         entries_data = cur_pckeiba.fetchall()
