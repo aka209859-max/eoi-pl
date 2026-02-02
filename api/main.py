@@ -586,6 +586,7 @@ async def refresh_predictions():
 async def get_predictions(date: str):
     """指定日の予想を生成"""
     try:
+        import traceback
         # 日付パース
         year, month_day = parse_date(date)
         
@@ -698,8 +699,14 @@ async def get_predictions(date: str):
         }
     
     except ValueError as e:
+        import traceback
+        print(f"[ERROR] ValueError: {str(e)}")
+        traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
+        import traceback
+        print(f"[ERROR] 予想生成エラー: {str(e)}")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"予想生成エラー: {str(e)}")
 
 # =====================================================================
