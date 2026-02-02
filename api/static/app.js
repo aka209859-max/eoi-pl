@@ -556,7 +556,7 @@ function copyRaceForTwitter(raceIndex) {
     const race = currentPredictions.races[raceIndex];
     const date = formatDate(currentPredictions.date);
     
-    // 修正版フォーマット
+    // 最終版フォーマット
     let twitterText = `${date}\n\n`;
     twitterText += `${race.rating}\n`;
     twitterText += `${race.venue}${race.race_no}R\n\n`;
@@ -564,8 +564,9 @@ function copyRaceForTwitter(raceIndex) {
     twitterText += `${race.top3.join('-')}\n\n`;
     twitterText += `Top5予想\n`;
     twitterText += `${race.top5.join('-')}\n\n`;
-    twitterText += `偏差値: ${race.top_deviation.toFixed(1)}\n`;
-    twitterText += `note→[リンク]`;
+    twitterText += `【用語解説】\n`;
+    twitterText += `Top3予想 = AI上位3頭（軸採用基準・馬連BOX）\n`;
+    twitterText += `Top5予想 = AI上位5頭（三連複BOX）`;
     
     navigator.clipboard.writeText(twitterText).then(() => {
         alert(`✅ X用テキストをクリップボードにコピーしました！\n【${race.venue} ${race.race_no}R】${race.rating}\n（${twitterText.length}文字）`);
