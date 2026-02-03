@@ -24,7 +24,7 @@ def check_race_data():
     cur.execute("""
         SELECT keibajo_code, COUNT(*) as race_count
         FROM races
-        WHERE race_date = '2026-02-04'
+        WHERE kaisai_nen = 2026 AND kaisai_tsukihi = 204
         GROUP BY keibajo_code
         ORDER BY keibajo_code
     """)
@@ -46,9 +46,9 @@ def check_race_data():
     # 詳細データ
     print("【詳細データ】")
     cur.execute("""
-        SELECT race_date, keibajo_code, race_bango, kyori, track_code
+        SELECT kaisai_nen, kaisai_tsukihi, keibajo_code, race_bango, kyori, track_code
         FROM races
-        WHERE race_date = '2026-02-04'
+        WHERE kaisai_nen = 2026 AND kaisai_tsukihi = 204
         ORDER BY keibajo_code, race_bango
     """)
     
@@ -56,7 +56,7 @@ def check_race_data():
     if rows:
         current_keibajo = None
         for row in rows:
-            race_date, keibajo, race_no, kyori, track = row
+            kaisai_nen, kaisai_tsukihi, keibajo, race_no, kyori, track = row
             if keibajo != current_keibajo:
                 print(f"\n  🏇 {keibajo}")
                 current_keibajo = keibajo
@@ -74,7 +74,7 @@ def check_race_data():
         SELECT r.keibajo_code, COUNT(DISTINCT e.race_id) as race_count, COUNT(*) as entry_count
         FROM races r
         LEFT JOIN entries e ON r.race_id = e.race_id
-        WHERE r.race_date = '2026-02-04'
+        WHERE r.kaisai_nen = 2026 AND r.kaisai_tsukihi = 204
         GROUP BY r.keibajo_code
         ORDER BY r.keibajo_code
     """)
