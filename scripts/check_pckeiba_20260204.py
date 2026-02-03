@@ -45,8 +45,8 @@ def check_pckeiba_data():
             keibajo_code,
             COUNT(*) as race_count
         FROM nvd_ra
-        WHERE year = 2026 
-          AND tsukihi = '0204'
+        WHERE kaisai_nen = '2026' 
+          AND kaisai_tsukihi = '0204'
         GROUP BY keibajo_code
         ORDER BY keibajo_code;
         """
@@ -74,8 +74,8 @@ def check_pckeiba_data():
             COUNT(DISTINCT race_bango) as race_count,
             COUNT(*) as horse_count
         FROM nvd_se
-        WHERE year = 2026 
-          AND tsukihi = '0204'
+        WHERE kaisai_nen = '2026' 
+          AND kaisai_tsukihi = '0204'
         GROUP BY keibajo_code
         ORDER BY keibajo_code;
         """
@@ -103,22 +103,22 @@ def check_pckeiba_data():
         SELECT 
             r.keibajo_code,
             r.race_bango,
-            r.race_name,
+            r.kyosomei_hondai as race_name,
             r.kyori,
             r.track_code,
             COUNT(s.umaban) as horse_count
         FROM nvd_ra r
         LEFT JOIN nvd_se s ON 
-            r.year = s.year AND 
-            r.tsukihi = s.tsukihi AND 
+            r.kaisai_nen = s.kaisai_nen AND 
+            r.kaisai_tsukihi = s.kaisai_tsukihi AND 
             r.keibajo_code = s.keibajo_code AND 
             r.race_bango = s.race_bango
-        WHERE r.year = 2026 
-          AND r.tsukihi = '0204'
+        WHERE r.kaisai_nen = '2026' 
+          AND r.kaisai_tsukihi = '0204'
         GROUP BY 
             r.keibajo_code, 
             r.race_bango, 
-            r.race_name, 
+            r.kyosomei_hondai, 
             r.kyori, 
             r.track_code
         ORDER BY 

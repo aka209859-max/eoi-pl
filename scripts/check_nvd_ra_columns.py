@@ -54,7 +54,7 @@ def check_nvd_ra_columns():
         print("\nサンプルデータ（最新5件）:")
         print("-" * 80)
         
-        cursor.execute("SELECT * FROM nvd_ra ORDER BY id DESC LIMIT 5;")
+        cursor.execute("SELECT * FROM nvd_ra ORDER BY kaisai_nen DESC, kaisai_tsukihi DESC LIMIT 5;")
         rows = cursor.fetchall()
         
         # カラム名を取得
