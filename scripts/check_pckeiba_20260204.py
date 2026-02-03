@@ -14,7 +14,7 @@ PCKEIBA_DB_CONFIG = {
     'port': 5432,
     'database': 'pckeiba',
     'user': 'postgres',
-    'password': 'postgres'
+    'password': 'postgres123'
 }
 
 # 競馬場コード
