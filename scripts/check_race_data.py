@@ -4,13 +4,14 @@
 2026/02/04のレースデータを確認
 """
 import sys
+import psycopg2
 sys.path.append('E:/eoi-pl')
 
-from api.config_windows import get_db_connection
+from api.config_windows import DB_CONFIG
 
 def check_race_data():
     """2026/02/04のレースデータを確認"""
-    conn = get_db_connection()
+    conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
     
     print("=" * 60)
